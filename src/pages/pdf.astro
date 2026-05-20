@@ -9,204 +9,230 @@ import { cv } from '../data/cv.ts';
   <title>Daniele Porcaro – CV</title>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&display=swap" rel="stylesheet" />
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --accent: #00c96e;
+      --accent-dark: #009952;
+      --dark: #0e0e16;
+      --sidebar-bg: #f4f6f4;
+      --text: #1a1a2e;
+      --muted: #6b7280;
+      --border: #e2e8e4;
+    }
 
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     html, body {
       background: #fff;
-      color: #111;
+      color: var(--text);
       font-family: 'JetBrains Mono', ui-monospace, monospace;
-      font-size: 11.5px;
-      line-height: 1.75;
+      font-size: 11px;
+      line-height: 1.7;
     }
 
-    /* ── print bar (hidden when printing) ── */
+    /* ── print bar ── */
     .print-bar {
-      position: fixed; top: 0; left: 0; right: 0;
-      background: #0a0a0f; color: #00ff88;
-      padding: 12px 24px;
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      background: var(--dark); color: #fff;
+      padding: 12px 28px;
       display: flex; align-items: center; justify-content: space-between;
-      font-size: 12px; z-index: 100;
-      border-bottom: 1px solid #1e1e2e;
+      font-size: 12px;
     }
+    .print-bar .logo { color: var(--accent); font-weight: 700; }
     .print-bar button {
-      background: #00ff88; color: #000; border: none;
-      padding: 7px 20px; font-family: inherit;
-      font-size: 12px; font-weight: 700; cursor: pointer; border-radius: 5px;
+      background: var(--accent); color: #000;
+      border: none; padding: 8px 22px;
+      font-family: inherit; font-size: 12px; font-weight: 700;
+      cursor: pointer; border-radius: 5px; letter-spacing: 0.02em;
     }
-    .print-bar button:hover { background: #00cc6a; }
+    .print-bar button:hover { background: var(--accent-dark); }
     body { padding-top: 52px; }
-    @media print {
-      .print-bar { display: none !important; }
-      body { padding-top: 0; }
-    }
+    @media print { .print-bar { display: none !important; } body { padding-top: 0; } }
 
-    /* ── page ── */
-    .page {
-      max-width: 210mm;
-      margin: 0 auto;
-      padding: 18mm 20mm 16mm;
-    }
+    /* ── page wrapper ── */
+    .page { max-width: 210mm; margin: 0 auto; }
 
-    /* ── header ── */
-    .header {
+    /* ── hero header ── */
+    .hero {
+      background: var(--dark);
+      color: #fff;
+      padding: 28px 28px 24px;
       display: flex;
       justify-content: space-between;
       align-items: flex-end;
-      padding-bottom: 14px;
-      margin-bottom: 18px;
-      border-bottom: 2px solid #111;
+      gap: 20px;
     }
-    .header-name {
-      font-size: 28px;
-      font-weight: 700;
-      letter-spacing: -0.03em;
-      line-height: 1;
+    .hero-name {
+      font-size: 34px; font-weight: 700;
+      letter-spacing: -0.03em; line-height: 1;
+      color: #fff;
     }
-    .header-role {
-      font-size: 12px;
-      color: #555;
-      font-weight: 400;
-      margin-top: 5px;
+    .hero-name span { color: var(--accent); }
+    .hero-role {
+      font-size: 12px; color: #94a3b8;
+      font-weight: 400; margin-top: 8px;
     }
-    .header-right {
-      text-align: right;
-      font-size: 10.5px;
-      color: #444;
-      line-height: 2;
+    .hero-contacts {
+      text-align: right; font-size: 10px;
+      color: #94a3b8; line-height: 2.1;
     }
-    .header-right a { color: #111; text-decoration: none; }
+    .hero-contacts a { color: #fff; text-decoration: none; }
+    .hero-contacts .hl { color: var(--accent); }
+
+    /* ── body layout ── */
+    .body {
+      display: grid;
+      grid-template-columns: 195px 1fr;
+    }
+
+    /* ── sidebar ── */
+    .sidebar {
+      background: var(--sidebar-bg);
+      padding: 22px 18px 22px 20px;
+      border-right: 1px solid var(--border);
+    }
+
+    /* ── main ── */
+    .main { padding: 22px 24px 22px 22px; }
 
     /* ── section titles ── */
-    .section { margin-top: 18px; }
-    .section-title {
-      font-size: 8.5px;
-      font-weight: 700;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      color: #888;
-      border-bottom: 1px solid #e0e0e0;
-      padding-bottom: 5px;
-      margin-bottom: 12px;
-    }
+    .section { margin-bottom: 20px; }
+    .section:last-child { margin-bottom: 0; }
 
-    /* ── two-column grid ── */
-    .two-col {
-      display: grid;
-      grid-template-columns: 200px 1fr;
-      gap: 24px;
-      margin-top: 18px;
+    .section-title {
+      font-size: 7.5px; font-weight: 700;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--accent-dark);
+      display: flex; align-items: center; gap: 6px;
+      margin-bottom: 11px;
+    }
+    .section-title::after {
+      content: ''; flex: 1; height: 1px;
+      background: var(--border);
     }
 
     /* ── items ── */
     .item { margin-bottom: 13px; }
     .item:last-child { margin-bottom: 0; }
 
-    .item-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      gap: 8px;
-    }
-    .item-name { font-weight: 700; font-size: 11.5px; }
-    .item-date { font-size: 10px; color: #666; white-space: nowrap; }
-    .item-sub { font-size: 10px; color: #555; margin-top: 1px; }
-    .item-desc { font-size: 10px; color: #444; margin-top: 4px; line-height: 1.65; }
+    .item-row { display: flex; justify-content: space-between; align-items: baseline; gap: 6px; }
+    .item-name { font-weight: 700; font-size: 11px; color: var(--text); }
+    .item-date { font-size: 9.5px; color: var(--accent-dark); font-weight: 600; white-space: nowrap; }
+    .item-sub { font-size: 10px; color: var(--muted); margin-top: 1px; }
+    .item-desc { font-size: 10px; color: #374151; margin-top: 4px; line-height: 1.65; }
 
     /* ── highlights ── */
-    .highlights { list-style: none; margin-top: 4px; }
-    .highlights li { font-size: 10px; color: #666; padding-left: 10px; position: relative; }
-    .highlights li::before { content: '·'; position: absolute; left: 0; color: #aaa; }
+    .highlights { list-style: none; margin-top: 5px; }
+    .highlights li {
+      font-size: 9.5px; color: var(--muted);
+      padding-left: 10px; position: relative; margin-bottom: 1px;
+    }
+    .highlights li::before { content: '▸'; position: absolute; left: 0; color: var(--accent); font-size: 8px; top: 1px; }
 
     /* ── skill bars ── */
-    .skill-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
-    .skill-name { width: 88px; font-size: 10px; color: #333; }
-    .skill-bar { flex: 1; height: 3px; background: #ebebeb; border-radius: 2px; overflow: hidden; }
-    .skill-fill { height: 100%; background: #333; border-radius: 2px; }
-    .skill-pct { font-size: 9px; color: #aaa; width: 26px; text-align: right; }
+    .skill-row { display: flex; align-items: center; gap: 7px; margin-bottom: 7px; }
+    .skill-name { width: 80px; font-size: 9.5px; color: var(--text); }
+    .skill-bar { flex: 1; height: 4px; background: #dde8dd; border-radius: 2px; overflow: hidden; }
+    .skill-fill { height: 100%; background: var(--accent); border-radius: 2px; }
+    .skill-pct { font-size: 8.5px; color: var(--muted); width: 24px; text-align: right; }
 
     /* ── tags ── */
-    .tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
+    .tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 5px; }
     .tag {
-      font-size: 9px; padding: 2px 7px;
-      border: 1px solid #ddd; border-radius: 4px; color: #444;
+      font-size: 8.5px; padding: 2px 7px;
+      border: 1px solid #c9d8c9; border-radius: 3px;
+      color: #374151; background: #fff;
     }
 
     /* ── competition box ── */
     .competition {
-      background: #f7f7f7;
-      padding: 8px 12px;
-      border-left: 3px solid #111;
-      margin-bottom: 10px;
-      border-radius: 0 4px 4px 0;
+      background: #fff;
+      border: 1px solid var(--accent);
+      border-left: 4px solid var(--accent);
+      padding: 9px 12px;
+      border-radius: 0 5px 5px 0;
+      margin-bottom: 12px;
     }
-
-    /* ── language pills ── */
-    .lang-grid { display: flex; gap: 16px; flex-wrap: wrap; }
-    .lang-item { }
-    .lang-code { font-weight: 700; font-size: 12px; }
-    .lang-label { font-size: 10px; color: #333; }
-    .lang-sub { font-size: 9.5px; color: #888; }
+    .competition .badge {
+      display: inline-block; background: var(--accent);
+      color: #000; font-size: 7.5px; font-weight: 700;
+      padding: 1px 7px; border-radius: 10px;
+      letter-spacing: 0.05em; margin-bottom: 5px;
+    }
 
     /* ── btc box ── */
     .btc-box {
-      background: #f9f9f9; border: 1px solid #e0e0e0;
-      padding: 6px 10px; border-radius: 4px; margin-top: 5px;
+      background: #f0faf4; border: 1px solid #b6ddc8;
+      padding: 7px 10px; border-radius: 4px; margin-top: 6px;
     }
-    .btc-box code { font-size: 8.5px; word-break: break-all; color: #555; }
+    .btc-box .btc-label { font-size: 7.5px; color: var(--accent-dark); margin-bottom: 2px; font-weight: 700; }
+    .btc-box code { font-size: 8px; word-break: break-all; color: #374151; }
+
+    /* ── score pill ── */
+    .score-pill {
+      display: inline-block;
+      background: var(--accent); color: #000;
+      font-size: 8.5px; font-weight: 700;
+      padding: 1px 8px; border-radius: 10px;
+      margin-left: 6px; vertical-align: middle;
+    }
+
+    /* ── lang items ── */
+    .lang-item { margin-bottom: 9px; }
+    .lang-code { font-size: 15px; font-weight: 700; color: var(--accent-dark); }
+    .lang-name { font-size: 10px; color: var(--text); font-weight: 600; }
+    .lang-level { font-size: 9px; color: var(--muted); }
 
     /* ── divider ── */
-    .divider { border: none; border-top: 1px solid #ebebeb; margin: 14px 0; }
+    hr { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
+
+    /* ── PCTO strip ── */
+    .pcto-strip {
+      background: var(--dark); color: #fff;
+      padding: 10px 14px; border-radius: 5px;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .pcto-strip .hours { color: var(--accent); font-weight: 700; font-size: 16px; }
 
     @page { size: A4; margin: 0; }
-    @media print {
-      .page { padding: 15mm 18mm 14mm; }
-      .item { margin-bottom: 11px; }
-      .section { margin-top: 14px; }
-    }
+    @media print { .page { max-width: 100%; } }
   </style>
 </head>
 <body>
+
   <div class="print-bar">
-    <span style="opacity:0.7">~/daniele.porcaro</span>
+    <span class="logo">~/daniele.porcaro</span>
     <button onclick="window.print()">↓ Salva come PDF &nbsp;(Ctrl+P)</button>
   </div>
 
   <div class="page">
 
-    <!-- HEADER -->
-    <div class="header">
+    <!-- HERO HEADER -->
+    <div class="hero">
       <div>
-        <div class="header-name">Daniele Porcaro</div>
-        <div class="header-role">Studente di Informatica &nbsp;·&nbsp; Torino, IT</div>
+        <div class="hero-name">Daniele<br/><span>Porcaro</span></div>
+        <div class="hero-role">Studente di Informatica &nbsp;·&nbsp; Torino, IT</div>
       </div>
-      <div class="header-right">
+      <div class="hero-contacts">
         <div><a href={`mailto:${cv.email}`}>{cv.email}</a></div>
-        <div><a href={cv.githubUrl}>github.com/{cv.github}</a></div>
-        <div>18 anni &nbsp;·&nbsp; <a href="https://dany80213.github.io/cv">dany80213.github.io/cv</a></div>
+        <div><a href={cv.githubUrl}>github.com/<span class="hl">{cv.github}</span></a></div>
+        <div>18 anni</div>
+        <div style="font-size:9px; color:#4a5568; margin-top:3px;">dany80213.github.io/cv</div>
       </div>
     </div>
 
-    <!-- PROFILO -->
-    <div class="section" style="margin-top:0;">
-      <div class="section-title">Profilo</div>
-      <p style="font-size:10.5px; color:#333; line-height:1.75; max-width:680px;">{cv.about.it}</p>
-    </div>
+    <div class="body">
 
-    <!-- TWO COLUMN -->
-    <div class="two-col">
+      <!-- ══ SIDEBAR ══ -->
+      <div class="sidebar">
 
-      <!-- ── LEFT: sidebar ── -->
-      <div>
-
-        <!-- FORMAZIONE -->
-        <div class="section" style="margin-top:0;">
+        <!-- Formazione -->
+        <div class="section">
           <div class="section-title">Formazione</div>
           {cv.education.map(e => (
             <div class="item">
               <div class="item-name">{e.school}</div>
-              <div class="item-sub">{e.degree.it}</div>
-              <div class="item-sub" style="color:#999;">{e.location}</div>
-              <div class="item-date" style="margin-top:2px;">{e.period}</div>
+              <div class="item-sub">{e.location}</div>
+              <div style="font-size:9.5px; color:var(--accent-dark); font-weight:600; margin-top:2px;">{e.period}</div>
+              <div class="item-sub" style="margin-top:2px;">{e.degree.it}</div>
               {e.highlights.it.length > 0 && (
                 <ul class="highlights">
                   {e.highlights.it.map(h => <li>{h}</li>)}
@@ -216,21 +242,19 @@ import { cv } from '../data/cv.ts';
           ))}
         </div>
 
-        <!-- LINGUE -->
+        <!-- Lingue -->
         <div class="section">
           <div class="section-title">Lingue</div>
-          <div style="display:flex; flex-direction:column; gap:8px;">
-            {cv.languages.map(l => (
-              <div>
-                <span class="lang-code">{l.code}</span>
-                <span class="lang-label"> &nbsp;{l.lang}</span>
-                <div class="lang-sub">{typeof l.level === 'object' ? l.level.it : l.level}</div>
-              </div>
-            ))}
-          </div>
+          {cv.languages.map(l => (
+            <div class="lang-item">
+              <span class="lang-code">{l.code}</span>
+              <span class="lang-name"> {l.lang}</span>
+              <div class="lang-level">{typeof l.level === 'object' ? l.level.it : l.level}</div>
+            </div>
+          ))}
         </div>
 
-        <!-- SOFT SKILLS -->
+        <!-- Soft Skills -->
         <div class="section">
           <div class="section-title">Soft Skills</div>
           <div class="tags">
@@ -238,7 +262,7 @@ import { cv } from '../data/cv.ts';
           </div>
         </div>
 
-        <!-- LINGUAGGI -->
+        <!-- Linguaggi -->
         <div class="section">
           <div class="section-title">Linguaggi</div>
           {cv.skills.languages.map(s => (
@@ -250,43 +274,47 @@ import { cv } from '../data/cv.ts';
           ))}
         </div>
 
-        <!-- TOOLS -->
+        <!-- Framework & Tools -->
         <div class="section">
-          <div class="section-title">Framework & Tools</div>
+          <div class="section-title">Framework</div>
           <div class="tags">{cv.skills.frameworks.map(f => <span class="tag">{f}</span>)}</div>
-          <div class="tags">{cv.skills.devops.map(d => <span class="tag">{d}</span>)}</div>
-          <div class="tags">{cv.skills.databases.map(d => <span class="tag">{d}</span>)}</div>
+          <div class="tags" style="margin-top:4px;">{cv.skills.devops.map(d => <span class="tag">{d}</span>)}</div>
+          <div class="tags" style="margin-top:4px;">{cv.skills.databases.map(d => <span class="tag">{d}</span>)}</div>
         </div>
 
-        <!-- HARDWARE -->
+        <!-- Hardware & Net -->
         <div class="section">
           <div class="section-title">Hardware & Net</div>
           <div class="tags">{cv.skills.hardware.map(h => <span class="tag">{h}</span>)}</div>
-          <div class="tags">{cv.skills.networking.map(n => <span class="tag">{n}</span>)}</div>
+          <div class="tags" style="margin-top:4px;">{cv.skills.networking.map(n => <span class="tag">{n}</span>)}</div>
         </div>
 
-        <!-- BLOCKCHAIN & AI -->
+        <!-- Blockchain & AI -->
         <div class="section">
           <div class="section-title">Blockchain & AI</div>
           <div class="tags">{cv.skills.blockchain.map(b => <span class="tag">{b}</span>)}</div>
-          <div class="tags">{cv.skills.ai.map(a => <span class="tag">{a}</span>)}</div>
+          <div class="tags" style="margin-top:4px;">{cv.skills.ai.map(a => <span class="tag">{a}</span>)}</div>
         </div>
 
       </div>
 
-      <!-- ── RIGHT: main content ── -->
-      <div>
+      <!-- ══ MAIN ══ -->
+      <div class="main">
 
-        <!-- PROGETTI -->
-        <div class="section" style="margin-top:0;">
+        <!-- Profilo -->
+        <div class="section">
+          <div class="section-title">Profilo</div>
+          <p style="font-size:10.5px; color:#374151; line-height:1.8;">{cv.about.it}</p>
+        </div>
+
+        <!-- Progetti -->
+        <div class="section">
           <div class="section-title">Progetti</div>
           {cv.projects.map(p => (
             <div class="item">
-              <div class="item-header">
+              <div class="item-row">
                 <span class="item-name">{typeof p.name === 'string' ? p.name : p.name.it}</span>
-                {p.url && (
-                  <a href={p.url} style="font-size:9px; color:#888; text-decoration:none;">↗ GitHub</a>
-                )}
+                {p.url && <a href={p.url} style="font-size:9px; color:var(--accent-dark); text-decoration:none; font-weight:600;">↗ GitHub</a>}
               </div>
               <div class="item-desc">{typeof p.description === 'object' ? p.description.it : p.description}</div>
               <div class="tags">{p.tech.map(t => <span class="tag">{t}</span>)}</div>
@@ -294,36 +322,35 @@ import { cv } from '../data/cv.ts';
           ))}
         </div>
 
-        <hr class="divider" />
+        <hr />
 
-        <!-- CERTIFICAZIONI & COMPETIZIONI -->
+        <!-- Certificazioni & Competizioni -->
         <div class="section">
           <div class="section-title">Certificazioni & Competizioni</div>
 
           <div class="competition">
-            <div class="item-header">
+            <div class="badge">🏆 COMPETIZIONE NAZIONALE</div>
+            <div class="item-row">
               <span class="item-name">{cv.competitions[0].name.it}</span>
               <span class="item-date">2026</span>
             </div>
             <div class="item-sub">{cv.competitions[0].role.it}</div>
-            <div style="font-size:9.5px; color:#777; font-style:italic; margin-top:2px;">{cv.competitions[0].note.it}</div>
+            <div style="font-size:9px; color:var(--muted); font-style:italic; margin-top:2px;">{cv.competitions[0].note.it}</div>
           </div>
 
           {cv.certifications.map(c => (
             <div class="item">
-              <div class="item-header">
-                <span class="item-name" style="font-size:11px;">
+              <div class="item-row">
+                <span class="item-name">
                   {typeof c.name === 'object' ? c.name.it : c.name}
-                  {'score' in c && c.score && (
-                    <span style="font-weight:400; color:#555; font-size:10px;"> &nbsp;·&nbsp; {c.score}</span>
-                  )}
+                  {'score' in c && c.score && <span class="score-pill">{c.score}</span>}
                 </span>
                 <span class="item-date">{typeof c.date === 'object' ? c.date.it : c.date}</span>
               </div>
               <div class="item-sub">{typeof c.issuer === 'object' ? c.issuer.it : c.issuer}</div>
               {c.verifiable && (
                 <div class="btc-box">
-                  <div style="font-size:8px; color:#999; margin-bottom:2px;">₿ Verificabile on-chain &nbsp;·&nbsp; TxID:</div>
+                  <div class="btc-label">₿ Verificabile on-chain · TxID</div>
                   <code>{cv.certifications[0].txid}</code>
                 </div>
               )}
@@ -331,17 +358,17 @@ import { cv } from '../data/cv.ts';
           ))}
         </div>
 
-        <hr class="divider" />
+        <hr />
 
         <!-- PCTO -->
         <div class="section">
           <div class="section-title">PCTO — Alternanza Scuola-Lavoro</div>
-          <div class="item">
-            <div class="item-header">
-              <span class="item-name">IIS J.C. Maxwell &nbsp;·&nbsp; Nichelino (TO)</span>
-              <span class="item-date">520 ore</span>
+          <div class="pcto-strip">
+            <div>
+              <div style="font-size:11px; font-weight:700;">IIS J.C. Maxwell · Nichelino (TO)</div>
+              <div style="font-size:9.5px; color:#94a3b8; margin-top:3px;">Attività in ambito informatico e networking</div>
             </div>
-            <div class="item-sub">Attività in ambito informatico e networking</div>
+            <div class="hours">520h</div>
           </div>
         </div>
 
