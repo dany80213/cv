@@ -208,6 +208,12 @@ Nichelino, 17/05/2025`,
       file: "cypherpunk2140.pdf",
       icon: "₿",
     },
+    {
+      name: "Patentino Robotica Industriale – Comau",
+      description: { it: "Certificazione robotica industriale PDL2", en: "Industrial robotics certification PDL2" },
+      file: "Professional_Certification_1747739235.pdf",
+      icon: "🤖",
+    },
     // Aggiungi altri certificati qui:
     // { name: "Cambridge C1", description: { it: "...", en: "..." }, file: "cambridge_c1.pdf", icon: "🎓" },
   ],
