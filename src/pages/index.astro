@@ -62,9 +62,9 @@ import { cv } from '../data/cv.ts';
       <a href={cv.githubUrl} target="_blank" rel="noopener" class="btn btn-outline">
         ⌥ github/{cv.github}
       </a>
-      <button id="pdf-btn" class="btn btn-outline">
+      <a href="/cv/pdf" target="_blank" class="btn btn-outline">
         ↓ Download CV PDF
-      </button>
+      </a>
     </div>
     <div style="margin-top:4rem; display:flex; gap:2rem; flex-wrap:wrap;">
       <div>
@@ -327,11 +327,23 @@ import { cv } from '../data/cv.ts';
             </div>
           </div>
           {c.verifiable && (
-            <div id={`bitcoin-verify-${idx}`} style="display:none; margin-top:1rem; padding:1rem; background:var(--bg); border-radius:6px; border:1px solid var(--border);">
-              <p style="font-size:0.72rem; color:var(--text-muted); margin-bottom:0.5rem;" data-i18n="cert.txid">TxID Bitcoin:</p>
-              <code style="font-size:0.7rem; color:var(--accent); word-break:break-all;">{cv.certifications[0].txid}</code>
-              <p style="font-size:0.72rem; color:var(--text-muted); margin-top:0.75rem; margin-bottom:0.25rem;" data-i18n="cert.hash">Hash certificato:</p>
-              <code style="font-size:0.7rem; color:var(--accent); word-break:break-all;">{cv.certifications[0].hash}</code>
+            <div id={`bitcoin-verify-${idx}`} style="display:none; margin-top:1rem; padding:1.25rem; background:var(--bg); border-radius:8px; border:1px solid var(--border);">
+              <div style="display:grid; gap:0.75rem; margin-bottom:1rem;">
+                <div>
+                  <p style="font-size:0.68rem; color:var(--text-muted); margin-bottom:3px;" data-i18n="cert.txid">TxID Bitcoin:</p>
+                  <code style="font-size:0.68rem; color:var(--accent); word-break:break-all; display:block;">{cv.certifications[0].txid}</code>
+                </div>
+                <div>
+                  <p style="font-size:0.68rem; color:var(--text-muted); margin-bottom:3px;" data-i18n="cert.hash">Hash certificato:</p>
+                  <code style="font-size:0.68rem; color:var(--accent); word-break:break-all; display:block;">{cv.certifications[0].hash}</code>
+                </div>
+              </div>
+              <div style="border-top:1px solid var(--border); padding-top:1rem;">
+                <button id="btc-verify-btn" class="btn btn-outline" style="font-size:0.78rem; padding:0.4rem 1rem;">
+                  ₿ Verifica live su blockchain Bitcoin
+                </button>
+                <div id="btc-verify-result" style="margin-top:0.75rem;"></div>
+              </div>
               <p style="font-size:0.68rem; color:var(--text-muted); margin-top:0.75rem; font-style:italic;" data-i18n="cert.verify-note">
                 Certificato verificabile tramite OpenTimestamps (.ots) e firma GPG (.asc)
               </p>
@@ -445,7 +457,73 @@ import { cv } from '../data/cv.ts';
       document.getElementById('theme-icon').textContent = theme === 'dark' ? '☀️' : '🌙';
     });
 
-    document.getElementById('pdf-btn').addEventListener('click', () => window.print());
+    // Bitcoin live verification
+    const btcTxid = '0203793396bbed6546055fb01f1e0e15d39268cb8f06d66c8ce058d0a27604ed';
+    const btcBtn = document.getElementById('btc-verify-btn');
+    const btcResult = document.getElementById('btc-verify-result');
+
+    btcBtn && btcBtn.addEventListener('click', async () => {
+      btcBtn.disabled = true;
+      btcBtn.textContent = '⏳ Interrogazione blockchain...';
+      btcResult.innerHTML = '';
+      try {
+        const [txRes, priceRes] = await Promise.allSettled([
+          fetch(`https://blockstream.info/api/tx/${btcTxid}`),
+          fetch('https://blockstream.info/api/blocks/tip/height'),
+        ]);
+        if (txRes.status !== 'fulfilled' || !txRes.value.ok) throw new Error('TX not found');
+        const tx = await txRes.value.json();
+        const tipHeight = priceRes.status === 'fulfilled' && priceRes.value.ok
+          ? parseInt(await priceRes.value.text())
+          : null;
+        const confirmed = tx.status?.confirmed;
+        const blockHeight = tx.status?.block_height;
+        const blockTime = tx.status?.block_time;
+        const confirmations = tipHeight && blockHeight ? tipHeight - blockHeight + 1 : null;
+        const date = blockTime ? new Date(blockTime * 1000).toLocaleDateString('it-IT', { day:'2-digit', month:'long', year:'numeric', hour:'2-digit', minute:'2-digit' }) : '—';
+        const opReturnOut = tx.vout?.find(o => o.scriptpubkey_type === 'op_return');
+        const commitment = opReturnOut ? opReturnOut.scriptpubkey.replace(/^6a20/, '') : null;
+
+        btcResult.innerHTML = `
+          <div style="background:var(--bg-card);border:1px solid var(--accent);border-radius:8px;padding:1rem;font-size:0.8rem;">
+            <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.75rem;">
+              <span style="color:#22c55e;font-size:1.1rem;">✓</span>
+              <span style="color:#22c55e;font-weight:700;">Timestamp confermato su blockchain Bitcoin</span>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:0.75rem;">
+              <div>
+                <div style="font-size:0.65rem;color:var(--text-muted);margin-bottom:2px;">Blocco</div>
+                <div style="font-weight:700;color:var(--accent);">#${blockHeight?.toLocaleString()}</div>
+              </div>
+              <div>
+                <div style="font-size:0.65rem;color:var(--text-muted);margin-bottom:2px;">Confermato il</div>
+                <div style="font-weight:600;">${date}</div>
+              </div>
+              ${confirmations ? `<div>
+                <div style="font-size:0.65rem;color:var(--text-muted);margin-bottom:2px;">Conferme</div>
+                <div style="font-weight:700;color:var(--accent);">${confirmations.toLocaleString()}</div>
+              </div>` : ''}
+            </div>
+            ${commitment ? `
+            <div style="margin-top:0.75rem;padding-top:0.75rem;border-top:1px solid var(--border);">
+              <div style="font-size:0.65rem;color:var(--text-muted);margin-bottom:2px;">OP_RETURN commitment:</div>
+              <code style="font-size:0.68rem;color:var(--accent);word-break:break-all;">${commitment}</code>
+            </div>` : ''}
+            <div style="margin-top:0.75rem;">
+              <a href="https://blockstream.info/tx/${btcTxid}" target="_blank" rel="noopener"
+                 style="font-size:0.75rem;color:var(--accent);text-decoration:none;">
+                ↗ Visualizza su Blockstream Explorer
+              </a>
+            </div>
+          </div>
+        `;
+        btcBtn.style.display = 'none';
+      } catch (err) {
+        btcResult.innerHTML = `<p style="color:#ef4444;font-size:0.8rem;">Errore di connessione. Riprova o visita blockstream.info manualmente.</p>`;
+        btcBtn.textContent = '₿ Verifica live su blockchain Bitcoin';
+        btcBtn.disabled = false;
+      }
+    });
 
     // Terminal
     const overlay = document.getElementById('terminal-overlay');
