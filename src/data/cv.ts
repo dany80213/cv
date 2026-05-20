@@ -49,8 +49,28 @@ export const cv = {
       issuer: { it: "IIS J.C. Maxwell / Progetto Futura (PNRR)", en: "IIS J.C. Maxwell / Futura Project (PNRR)" },
       date: "09/05/2025",
       verifiable: true,
-      txid: "02037933 96BBED65 46055FB0 1F1E0E15 D39268CB 8F06D66C 8CE058D0 A27604ED",
+      score: "74/80",
+      certUrl: "https://www.jcmaxwell.it/cypherpunk2140",
+      txid: "0203793396bbed6546055fb01f1e0e15d39268cb8f06d66c8ce058d0a27604ed",
       hash: "D8B2CBE9 FC4CD664 3D8F66D0 DB5AF87C 94C07A67 210FFE21 4C00AE98 A6B6C93F",
+      signedText: `Istituto di Istruzione Superiore J. C. Maxwell
+Via XXV Aprile 141, Nichelino (TO)
+
+Corso "Cypherpunk 2140"
+~ Proof of Knowledge ~
+https://www.jcmaxwell.it/cypherpunk2140
+
+Si certifica che lo studente
+
+Daniele Porcaro, classe 3A INFO
+
+in data 09/05/2025 ha superato l'esame di certificazione
+del corso "Cypherpunk2140" con un punteggio di 74/80.
+Questo certificato è emesso e firmato dal Prof. Marco Farina.
+
+Nichelino, 17/05/2025`,
+      gpgFingerprint: "44021BD1F34AE97188 9CF873C03EE33A2FFE9173",
+      file: "cypherpunk2140.pdf",
     },
     {
       name: "Cambridge English C1 Advanced",
@@ -179,4 +199,16 @@ export const cv = {
     it: "PCTO svolto presso IIS J.C. Maxwell",
     en: "Work-based learning (PCTO) at IIS J.C. Maxwell",
   },
+
+  // Certificati disponibili per il download — aggiungi file in public/certs/ e una voce qui
+  downloadableCerts: [
+    {
+      name: "Cypherpunk 2140 – Proof of Knowledge",
+      description: { it: "Certificato esame blockchain, punteggio 74/80", en: "Blockchain exam certificate, score 74/80" },
+      file: "cypherpunk2140.pdf",
+      icon: "₿",
+    },
+    // Aggiungi altri certificati qui:
+    // { name: "Cambridge C1", description: { it: "...", en: "..." }, file: "cambridge_c1.pdf", icon: "🎓" },
+  ],
 };

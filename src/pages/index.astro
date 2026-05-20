@@ -300,58 +300,102 @@ import { cv } from '../data/cv.ts';
         <div class="card" style="padding:1.25rem 1.5rem;">
           <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:0.5rem;">
             <div style="flex:1;">
-              <h3 style="font-size:0.88rem; font-weight:700; margin-bottom:0.2rem;">
-                {typeof c.name === 'object' ? c.name.it : c.name}
-              </h3>
+              <div style="display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap; margin-bottom:0.2rem;">
+                <h3 style="font-size:0.88rem; font-weight:700;">
+                  {typeof c.name === 'object' ? c.name.it : c.name}
+                </h3>
+                {'score' in c && c.score && (
+                  <span class="badge" style="border-color:var(--accent); color:var(--accent); font-size:0.7rem;">
+                    {c.score}
+                  </span>
+                )}
+              </div>
               <p class="cert-issuer" style="font-size:0.78rem; color:var(--text-muted);"
                  data-it={typeof c.issuer === 'object' ? c.issuer.it : c.issuer}
                  data-en={typeof c.issuer === 'object' ? c.issuer.en : c.issuer}>
                 {typeof c.issuer === 'object' ? c.issuer.it : c.issuer}
               </p>
             </div>
-            <div style="text-align:right; flex-shrink:0;">
+            <div style="text-align:right; flex-shrink:0; display:flex; flex-direction:column; align-items:flex-end; gap:0.4rem;">
               <span class="cert-date" style="font-size:0.78rem; color:var(--accent);"
                     data-it={typeof c.date === 'object' ? c.date.it : c.date}
                     data-en={typeof c.date === 'object' ? c.date.en : c.date}>
                 {typeof c.date === 'object' ? c.date.it : c.date}
               </span>
-              {c.verifiable && (
-                <div style="margin-top:0.5rem;">
+              <div style="display:flex; gap:0.4rem; flex-wrap:wrap; justify-content:flex-end;">
+                {'file' in c && c.file && (
+                  <a href={`/cv/certs/${c.file}`} download class="btn btn-outline" style="padding:0.2rem 0.6rem; font-size:0.7rem;">
+                    ↓ PDF
+                  </a>
+                )}
+                {c.verifiable && (
                   <button class="btn btn-outline" style="padding:0.2rem 0.6rem; font-size:0.7rem;"
                           data-i18n="cert.verify"
                           onclick={`document.getElementById('bitcoin-verify-${idx}').style.display = document.getElementById('bitcoin-verify-${idx}').style.display === 'none' ? 'block' : 'none'`}>
                     ₿ Verify on-chain
                   </button>
-                </div>
-              )}
+                )}
+              </div>
             </div>
           </div>
           {c.verifiable && (
             <div id={`bitcoin-verify-${idx}`} style="display:none; margin-top:1rem; padding:1.25rem; background:var(--bg); border-radius:8px; border:1px solid var(--border);">
-              <div style="display:grid; gap:0.75rem; margin-bottom:1rem;">
+              <!-- Signed certificate content -->
+              {'signedText' in c && c.signedText && (
+                <div style="margin-bottom:1rem;">
+                  <p style="font-size:0.68rem; color:var(--text-muted); margin-bottom:6px; letter-spacing:0.05em; text-transform:uppercase;">Contenuto firmato GPG · SHA-512</p>
+                  <pre style="font-size:0.72rem; color:var(--text-dim); background:var(--bg-card); border:1px solid var(--border); border-radius:6px; padding:0.75rem; white-space:pre-wrap; line-height:1.6; font-family:inherit;">{c.signedText}</pre>
+                </div>
+              )}
+              <!-- Hashes -->
+              <div style="display:grid; gap:0.6rem; margin-bottom:1rem;">
                 <div>
-                  <p style="font-size:0.68rem; color:var(--text-muted); margin-bottom:3px;" data-i18n="cert.txid">TxID Bitcoin:</p>
+                  <p style="font-size:0.65rem; color:var(--text-muted); margin-bottom:2px;" data-i18n="cert.txid">TxID Bitcoin:</p>
                   <code style="font-size:0.68rem; color:var(--accent); word-break:break-all; display:block;">{cv.certifications[0].txid}</code>
                 </div>
                 <div>
-                  <p style="font-size:0.68rem; color:var(--text-muted); margin-bottom:3px;" data-i18n="cert.hash">Hash certificato:</p>
+                  <p style="font-size:0.65rem; color:var(--text-muted); margin-bottom:2px;" data-i18n="cert.hash">Hash certificato:</p>
                   <code style="font-size:0.68rem; color:var(--accent); word-break:break-all; display:block;">{cv.certifications[0].hash}</code>
                 </div>
               </div>
+              <!-- Live verify button -->
               <div style="border-top:1px solid var(--border); padding-top:1rem;">
                 <button id="btc-verify-btn" class="btn btn-outline" style="font-size:0.78rem; padding:0.4rem 1rem;">
-                  ₿ Verifica live su blockchain Bitcoin
+                  ₿ Verifica timestamp live su blockchain Bitcoin
                 </button>
                 <div id="btc-verify-result" style="margin-top:0.75rem;"></div>
               </div>
-              <p style="font-size:0.68rem; color:var(--text-muted); margin-top:0.75rem; font-style:italic;" data-i18n="cert.verify-note">
-                Certificato verificabile tramite OpenTimestamps (.ots) e firma GPG (.asc)
+              <p style="font-size:0.65rem; color:var(--text-muted); margin-top:0.75rem; font-style:italic;" data-i18n="cert.verify-note">
+                Verificabile tramite OpenTimestamps (.ots) + firma GPG (.asc) · <a href="https://www.jcmaxwell.it/cypherpunk2140" target="_blank" style="color:var(--accent); text-decoration:none;">jcmaxwell.it/cypherpunk2140</a>
               </p>
             </div>
           )}
         </div>
       ))}
     </div>
+
+    <!-- SCARICA CERTIFICATI -->
+    {cv.downloadableCerts.length > 0 && (
+      <div style="margin-top:2rem;">
+        <h3 style="font-size:0.8rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.1em; margin-bottom:1rem;" data-i18n="certs.download">Scarica certificati</h3>
+        <div style="display:flex; flex-wrap:wrap; gap:0.75rem;">
+          {cv.downloadableCerts.map(d => (
+            <a href={`/cv/certs/${d.file}`} download class="card" style="padding:1rem 1.25rem; display:flex; align-items:center; gap:0.75rem; text-decoration:none; flex:1; min-width:220px;">
+              <span style="font-size:1.5rem; line-height:1;">{d.icon}</span>
+              <div>
+                <div style="font-size:0.82rem; font-weight:700; color:var(--text);">{d.name}</div>
+                <div class="dl-cert-desc" style="font-size:0.72rem; color:var(--text-muted); margin-top:2px;"
+                     data-it={typeof d.description === 'object' ? d.description.it : d.description}
+                     data-en={typeof d.description === 'object' ? d.description.en : d.description}>
+                  {typeof d.description === 'object' ? d.description.it : d.description}
+                </div>
+              </div>
+              <span style="margin-left:auto; font-size:0.8rem; color:var(--accent);">↓</span>
+            </a>
+          ))}
+        </div>
+      </div>
+    )}
   </section>
 
   <!-- CONTACT -->
@@ -408,6 +452,7 @@ import { cv } from '../data/cv.ts';
         'cert.verify-note':'Certificato verificabile tramite OpenTimestamps (.ots) e firma GPG (.asc)',
         'contact.text':'Sono sempre aperto a nuove opportunità, collaborazioni o semplicemente a fare due chiacchiere di tech.',
         'footer.built':'Costruito con','projects.more':'+ Altri progetti',
+        'certs.download':'Scarica certificati',
       },
       en: {
         'nav.projects':'Projects','nav.skills':'Skills','nav.certs':'Certifications','nav.contact':'Contact',
@@ -421,6 +466,7 @@ import { cv } from '../data/cv.ts';
         'cert.verify-note':'Certificate verifiable via OpenTimestamps (.ots) and GPG signature (.asc)',
         'contact.text':"I'm always open to new opportunities, collaborations, or just talking tech.",
         'footer.built':'Built with','projects.more':'+ More projects',
+        'certs.download':'Download certificates',
       }
     };
 
