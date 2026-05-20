@@ -1,0 +1,564 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { cv } from '../data/cv.ts';
+---
+<Layout>
+  <!-- NAV -->
+  <nav id="nav" style="
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: var(--bg); border-bottom: 1px solid var(--border);
+    padding: 0.75rem 2rem;
+    display: flex; align-items: center; justify-content: space-between;
+    transition: border-color 0.3s;
+  ">
+    <span style="font-weight:700; color:var(--accent); font-size:1rem;">
+      <span style="opacity:0.5">~/</span>daniele.dev
+    </span>
+    <div style="display:flex; align-items:center; gap:1.25rem;">
+      <a href="#projects" class="nav-link" data-i18n="nav.projects">Progetti</a>
+      <a href="#skills" class="nav-link" data-i18n="nav.skills">Skills</a>
+      <a href="#certifications" class="nav-link" data-i18n="nav.certs">Certificazioni</a>
+      <a href="#contact" class="nav-link" data-i18n="nav.contact">Contatti</a>
+      <button id="lang-toggle" class="btn btn-outline" style="padding:0.3rem 0.8rem; font-size:0.75rem;">EN</button>
+      <button id="theme-toggle" aria-label="toggle theme" style="background:none;border:none;cursor:pointer;color:var(--text-dim);font-size:1.2rem;line-height:1;">
+        <span id="theme-icon">☀️</span>
+      </button>
+      <button id="terminal-btn" class="btn btn-outline" style="padding:0.3rem 0.8rem; font-size:0.75rem;" title="Easter egg">
+        &gt;_
+      </button>
+    </div>
+  </nav>
+
+  <style>
+    .nav-link { color: var(--text-dim); text-decoration: none; font-size: 0.82rem; transition: color 0.2s; }
+    .nav-link:hover { color: var(--accent); }
+    @media(max-width:640px){ .nav-link { display: none; } }
+  </style>
+
+  <!-- HERO -->
+  <section style="
+    min-height: 100vh;
+    display: flex; flex-direction: column; justify-content: center;
+    padding: 6rem 2rem 4rem;
+    max-width: 860px; margin: 0 auto;
+  ">
+    <p style="color:var(--accent); font-size:0.85rem; margin-bottom:1rem; opacity:0.8;">
+      <span id="greeting">ciao, sono</span>
+    </p>
+    <h1 style="font-size: clamp(2.5rem, 7vw, 5rem); font-weight:700; line-height:1.1; margin-bottom:0.5rem;">
+      Daniele<br/><span style="color:var(--accent)">Porcaro</span>
+    </h1>
+    <h2 style="font-size: clamp(1rem, 3vw, 1.5rem); color:var(--text-dim); margin-bottom:1.5rem; font-weight:400;">
+      <span id="hero-role">Studente di Informatica</span>
+      <span style="opacity:0.4"> @ Torino, IT</span>
+    </h2>
+    <p id="hero-tagline" style="color:var(--text-dim); max-width:580px; margin-bottom:2.5rem; font-size:0.95rem;">
+      {cv.tagline.it}
+    </p>
+    <div style="display:flex; flex-wrap:wrap; gap:1rem; align-items:center;">
+      <a href={`mailto:${cv.email}`} class="btn btn-primary">
+        ✉ {cv.email}
+      </a>
+      <a href={cv.githubUrl} target="_blank" rel="noopener" class="btn btn-outline">
+        ⌥ github/{cv.github}
+      </a>
+      <button id="pdf-btn" class="btn btn-outline">
+        ↓ Download CV PDF
+      </button>
+    </div>
+    <div style="margin-top:4rem; display:flex; gap:2rem; flex-wrap:wrap;">
+      <div>
+        <div style="font-size:1.8rem; font-weight:700; color:var(--accent)">18</div>
+        <div style="font-size:0.75rem; color:var(--text-muted)" data-i18n="stat.age">anni</div>
+      </div>
+      <div>
+        <div style="font-size:1.8rem; font-weight:700; color:var(--accent)">12+</div>
+        <div style="font-size:0.75rem; color:var(--text-muted)" data-i18n="stat.projects">progetti</div>
+      </div>
+      <div>
+        <div style="font-size:1.8rem; font-weight:700; color:var(--accent)">520h</div>
+        <div style="font-size:0.75rem; color:var(--text-muted)">PCTO</div>
+      </div>
+      <div>
+        <div style="font-size:1.8rem; font-weight:700; color:var(--accent)">5</div>
+        <div style="font-size:0.75rem; color:var(--text-muted)" data-i18n="stat.certs">certificazioni</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about" style="max-width:860px; margin:0 auto; padding:4rem 2rem;">
+    <h2 class="section-title" data-i18n="section.about">Chi sono</h2>
+    <div class="card" style="padding:1.75rem;">
+      <p id="about-text" style="color:var(--text-dim); font-size:0.95rem; line-height:1.9;">
+        {cv.about.it}
+      </p>
+    </div>
+  </section>
+
+  <!-- PROJECTS -->
+  <section id="projects" style="max-width:860px; margin:0 auto; padding:4rem 2rem;">
+    <h2 class="section-title" data-i18n="section.projects">Progetti</h2>
+    <div style="display:grid; gap:1.25rem;">
+      {cv.projects.filter(p => p.featured).map(p => (
+        <div class="card" style="padding:1.5rem;">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:0.75rem; margin-bottom:0.75rem;">
+            <h3 style="font-size:1rem; font-weight:700; color:var(--text);">
+              {typeof p.name === 'string' ? p.name : p.name.it}
+            </h3>
+            <div style="display:flex; gap:0.5rem;">
+              {p.url && (
+                <a href={p.url} target="_blank" rel="noopener" class="btn btn-outline" style="padding:0.25rem 0.7rem; font-size:0.72rem;">
+                  ↗ GitHub
+                </a>
+              )}
+            </div>
+          </div>
+          <p class="proj-desc" style="color:var(--text-dim); font-size:0.87rem; margin-bottom:1rem; line-height:1.75;"
+             data-it={typeof p.description === 'object' ? p.description.it : p.description}
+             data-en={typeof p.description === 'object' ? p.description.en : p.description}>
+            {typeof p.description === 'object' ? p.description.it : p.description}
+          </p>
+          <div style="display:flex; flex-wrap:wrap; gap:0.4rem;">
+            {p.tech.map(t => (
+              <span class="badge">{t}</span>
+            ))}
+          </div>
+        </div>
+      ))}
+      <details style="margin-top:0.25rem;">
+        <summary style="cursor:pointer; color:var(--text-muted); font-size:0.85rem; padding:0.5rem 0; user-select:none;"
+                 data-i18n="projects.more">+ Altri progetti</summary>
+        <div style="display:grid; gap:1rem; margin-top:1rem;">
+          {cv.projects.filter(p => !p.featured).map(p => (
+            <div class="card" style="padding:1.25rem;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
+                <h4 style="font-size:0.9rem; font-weight:700; color:var(--text);">
+                  {typeof p.name === 'string' ? p.name : p.name.it}
+                </h4>
+                {p.url && (
+                  <a href={p.url} target="_blank" rel="noopener" style="color:var(--accent); font-size:0.75rem;">↗</a>
+                )}
+              </div>
+              <p class="proj-desc" style="color:var(--text-dim); font-size:0.82rem; margin-bottom:0.75rem;"
+                 data-it={typeof p.description === 'object' ? p.description.it : p.description}
+                 data-en={typeof p.description === 'object' ? p.description.en : p.description}>
+                {typeof p.description === 'object' ? p.description.it : p.description}
+              </p>
+              <div style="display:flex; flex-wrap:wrap; gap:0.35rem;">
+                {p.tech.map(t => <span class="badge">{t}</span>)}
+              </div>
+            </div>
+          ))}
+        </div>
+      </details>
+    </div>
+  </section>
+
+  <!-- SKILLS -->
+  <section id="skills" style="max-width:860px; margin:0 auto; padding:4rem 2rem;">
+    <h2 class="section-title" data-i18n="section.skills">Skills</h2>
+    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap:1.25rem;">
+      <div class="card" style="padding:1.5rem;">
+        <h3 style="color:var(--accent); font-size:0.8rem; letter-spacing:0.1em; text-transform:uppercase; margin-bottom:1.25rem;" data-i18n="skills.languages">Linguaggi</h3>
+        {cv.skills.languages.map(s => (
+          <div style="margin-bottom:1rem;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+              <span style="font-size:0.82rem;">{s.name}</span>
+              <span style="font-size:0.72rem; color:var(--text-muted);">{s.level}%</span>
+            </div>
+            <div class="skill-bar"><div class="skill-bar-fill" style={`width:${s.level}%`}></div></div>
+          </div>
+        ))}
+      </div>
+      <div class="card" style="padding:1.5rem;">
+        <h3 style="color:var(--accent); font-size:0.8rem; letter-spacing:0.1em; text-transform:uppercase; margin-bottom:1.25rem;">Frameworks & Tools</h3>
+        <div style="margin-bottom:1rem;">
+          <p style="font-size:0.72rem; color:var(--text-muted); margin-bottom:0.5rem;" data-i18n="skills.frameworks">Framework</p>
+          <div style="display:flex; flex-wrap:wrap; gap:0.35rem;">
+            {cv.skills.frameworks.map(f => <span class="badge">{f}</span>)}
+          </div>
+        </div>
+        <div style="margin-bottom:1rem;">
+          <p style="font-size:0.72rem; color:var(--text-muted); margin-bottom:0.5rem;">DevOps & Tools</p>
+          <div style="display:flex; flex-wrap:wrap; gap:0.35rem;">
+            {cv.skills.devops.map(d => <span class="badge">{d}</span>)}
+          </div>
+        </div>
+        <div>
+          <p style="font-size:0.72rem; color:var(--text-muted); margin-bottom:0.5rem;">Database</p>
+          <div style="display:flex; flex-wrap:wrap; gap:0.35rem;">
+            {cv.skills.databases.map(d => <span class="badge">{d}</span>)}
+          </div>
+        </div>
+      </div>
+      <div class="card" style="padding:1.5rem;">
+        <h3 style="color:var(--accent); font-size:0.8rem; letter-spacing:0.1em; text-transform:uppercase; margin-bottom:1.25rem;">Hardware & Networking</h3>
+        <div style="margin-bottom:1rem;">
+          <p style="font-size:0.72rem; color:var(--text-muted); margin-bottom:0.5rem;">Hardware</p>
+          <div style="display:flex; flex-wrap:wrap; gap:0.35rem;">
+            {cv.skills.hardware.map(h => <span class="badge">{h}</span>)}
+          </div>
+        </div>
+        <div style="margin-bottom:1rem;">
+          <p style="font-size:0.72rem; color:var(--text-muted); margin-bottom:0.5rem;">Networking</p>
+          <div style="display:flex; flex-wrap:wrap; gap:0.35rem;">
+            {cv.skills.networking.map(n => <span class="badge">{n}</span>)}
+          </div>
+        </div>
+        <div style="margin-bottom:1rem;">
+          <p style="font-size:0.72rem; color:var(--text-muted); margin-bottom:0.5rem;">Blockchain</p>
+          <div style="display:flex; flex-wrap:wrap; gap:0.35rem;">
+            {cv.skills.blockchain.map(b => <span class="badge">{b}</span>)}
+          </div>
+        </div>
+        <div>
+          <p style="font-size:0.72rem; color:var(--text-muted); margin-bottom:0.5rem;">AI Tools</p>
+          <div style="display:flex; flex-wrap:wrap; gap:0.35rem;">
+            {cv.skills.ai.map(a => <span class="badge">{a}</span>)}
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" style="padding:1.5rem; margin-top:1.25rem; display:flex; flex-wrap:wrap; gap:1rem; align-items:center;">
+      <span style="font-size:0.8rem; color:var(--text-muted); letter-spacing:0.1em; text-transform:uppercase;" data-i18n="skills.soft">Soft skills:</span>
+      {cv.softSkills.it.map(s => (
+        <span class="badge" style="border-color:var(--accent); color:var(--accent);">{s}</span>
+      ))}
+    </div>
+  </section>
+
+  <!-- EDUCATION -->
+  <section id="education" style="max-width:860px; margin:0 auto; padding:4rem 2rem;">
+    <h2 class="section-title" data-i18n="section.education">Formazione</h2>
+    <div style="display:grid; gap:1rem;">
+      {cv.education.map(e => (
+        <div class="card" style="padding:1.5rem; display:flex; gap:1.5rem; flex-wrap:wrap;">
+          <div style="flex:1; min-width:200px;">
+            <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.25rem;">
+              <h3 style="font-size:0.95rem; font-weight:700;">{e.school}</h3>
+              {e.current && <span class="badge" style="border-color:var(--accent); color:var(--accent); font-size:0.65rem;" data-i18n="edu.current">in corso</span>}
+            </div>
+            <p style="font-size:0.82rem; color:var(--text-dim); margin-bottom:0.25rem;">{e.location}</p>
+            <p class="edu-degree" style="font-size:0.82rem; color:var(--text-dim);"
+               data-it={e.degree.it} data-en={e.degree.en}>{e.degree.it}</p>
+          </div>
+          <div style="text-align:right; min-width:100px;">
+            <p style="font-size:0.82rem; color:var(--accent); font-weight:600;">{e.period}</p>
+            {e.highlights.it.length > 0 && (
+              <ul style="list-style:none; margin-top:0.5rem;">
+                {e.highlights.it.map((h, i) => (
+                  <li class="edu-highlight" style="font-size:0.75rem; color:var(--text-muted);"
+                      data-it={e.highlights.it[i]}
+                      data-en={e.highlights.en[i]}>{h}</li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </div>
+      ))}
+    </div>
+    <div style="margin-top:2rem;">
+      <h3 style="font-size:0.8rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.1em; margin-bottom:1rem;" data-i18n="section.languages">Lingue</h3>
+      <div style="display:flex; gap:1rem; flex-wrap:wrap;">
+        {cv.languages.map(l => (
+          <div class="card" style="padding:1rem 1.5rem; flex:1; min-width:140px; text-align:center;">
+            <div style="font-size:1.25rem; font-weight:700; color:var(--accent);">{l.code}</div>
+            <div style="font-size:0.82rem; font-weight:600; margin-top:0.25rem;">{l.lang}</div>
+            <div class="lang-level" style="font-size:0.72rem; color:var(--text-muted); margin-top:0.15rem;"
+                 data-it={typeof l.level === 'object' ? l.level.it : l.level}
+                 data-en={typeof l.level === 'object' ? l.level.en : l.level}>
+              {typeof l.level === 'object' ? l.level.it : l.level}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- CERTIFICATIONS -->
+  <section id="certifications" style="max-width:860px; margin:0 auto; padding:4rem 2rem;">
+    <h2 class="section-title" data-i18n="section.certs">Certificazioni</h2>
+    <div class="card" style="padding:1.5rem; margin-bottom:1.25rem; border-color:var(--accent);">
+      <div style="display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:0.75rem;">
+        <div>
+          <span class="badge" style="border-color:var(--accent); color:var(--accent); margin-bottom:0.5rem;" data-i18n="comp.label">🏆 Competizione</span>
+          <h3 class="comp-name" style="font-size:0.95rem; font-weight:700; margin-top:0.25rem;"
+              data-it={cv.competitions[0].name.it}
+              data-en={cv.competitions[0].name.en}>{cv.competitions[0].name.it}</h3>
+          <p class="comp-role" style="font-size:0.82rem; color:var(--text-dim); margin-top:0.25rem;"
+             data-it={cv.competitions[0].role.it}
+             data-en={cv.competitions[0].role.en}>{cv.competitions[0].role.it}</p>
+        </div>
+        <p class="comp-note" style="font-size:0.75rem; color:var(--text-muted); max-width:260px; text-align:right; font-style:italic;"
+           data-it={cv.competitions[0].note.it}
+           data-en={cv.competitions[0].note.en}>{cv.competitions[0].note.it}</p>
+      </div>
+    </div>
+    <div style="display:grid; gap:1rem;">
+      {cv.certifications.map((c, idx) => (
+        <div class="card" style="padding:1.25rem 1.5rem;">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:0.5rem;">
+            <div style="flex:1;">
+              <h3 style="font-size:0.88rem; font-weight:700; margin-bottom:0.2rem;">
+                {typeof c.name === 'object' ? c.name.it : c.name}
+              </h3>
+              <p class="cert-issuer" style="font-size:0.78rem; color:var(--text-muted);"
+                 data-it={typeof c.issuer === 'object' ? c.issuer.it : c.issuer}
+                 data-en={typeof c.issuer === 'object' ? c.issuer.en : c.issuer}>
+                {typeof c.issuer === 'object' ? c.issuer.it : c.issuer}
+              </p>
+            </div>
+            <div style="text-align:right; flex-shrink:0;">
+              <span class="cert-date" style="font-size:0.78rem; color:var(--accent);"
+                    data-it={typeof c.date === 'object' ? c.date.it : c.date}
+                    data-en={typeof c.date === 'object' ? c.date.en : c.date}>
+                {typeof c.date === 'object' ? c.date.it : c.date}
+              </span>
+              {c.verifiable && (
+                <div style="margin-top:0.5rem;">
+                  <button class="btn btn-outline" style="padding:0.2rem 0.6rem; font-size:0.7rem;"
+                          data-i18n="cert.verify"
+                          onclick={`document.getElementById('bitcoin-verify-${idx}').style.display = document.getElementById('bitcoin-verify-${idx}').style.display === 'none' ? 'block' : 'none'`}>
+                    ₿ Verify on-chain
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+          {c.verifiable && (
+            <div id={`bitcoin-verify-${idx}`} style="display:none; margin-top:1rem; padding:1rem; background:var(--bg); border-radius:6px; border:1px solid var(--border);">
+              <p style="font-size:0.72rem; color:var(--text-muted); margin-bottom:0.5rem;" data-i18n="cert.txid">TxID Bitcoin:</p>
+              <code style="font-size:0.7rem; color:var(--accent); word-break:break-all;">{cv.certifications[0].txid}</code>
+              <p style="font-size:0.72rem; color:var(--text-muted); margin-top:0.75rem; margin-bottom:0.25rem;" data-i18n="cert.hash">Hash certificato:</p>
+              <code style="font-size:0.7rem; color:var(--accent); word-break:break-all;">{cv.certifications[0].hash}</code>
+              <p style="font-size:0.68rem; color:var(--text-muted); margin-top:0.75rem; font-style:italic;" data-i18n="cert.verify-note">
+                Certificato verificabile tramite OpenTimestamps (.ots) e firma GPG (.asc)
+              </p>
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact" style="max-width:860px; margin:0 auto; padding:4rem 2rem 8rem;">
+    <h2 class="section-title" data-i18n="section.contact">Contatti</h2>
+    <div class="card" style="padding:2rem; text-align:center;">
+      <p id="contact-text" style="color:var(--text-dim); margin-bottom:1.5rem; font-size:0.95rem;">
+        Sono sempre aperto a nuove opportunità, collaborazioni o semplicemente a fare due chiacchiere di tech.
+      </p>
+      <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:1rem;">
+        <a href={`mailto:${cv.email}`} class="btn btn-primary">✉ {cv.email}</a>
+        <a href={cv.githubUrl} target="_blank" rel="noopener" class="btn btn-outline">⌥ GitHub</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer style="border-top:1px solid var(--border); padding:1.5rem 2rem; text-align:center;">
+    <p style="font-size:0.75rem; color:var(--text-muted);">
+      <span data-i18n="footer.built">Costruito con</span> Astro + Tailwind ·
+      <span style="color:var(--accent)">Daniele Porcaro</span> · 2025
+    </p>
+  </footer>
+
+  <!-- TERMINAL EASTER EGG -->
+  <div id="terminal-overlay" role="dialog" aria-modal="true">
+    <div id="terminal-box">
+      <div id="terminal-bar">
+        <div class="dot" style="background:#ff5f57;"></div>
+        <div class="dot" style="background:#febc2e;"></div>
+        <div class="dot" style="background:#28c840;"></div>
+        <span>daniele@cv:~</span>
+      </div>
+      <div id="terminal-body"></div>
+      <div id="terminal-input-row">
+        <span>❯</span>
+        <input id="terminal-input" autocomplete="off" spellcheck="false" placeholder="type 'help'" />
+      </div>
+    </div>
+  </div>
+
+  <script define:vars={{ cvData: cv }}>
+    const lang = { current: 'it' };
+    const t = {
+      it: {
+        'nav.projects':'Progetti','nav.skills':'Skills','nav.certs':'Certificazioni','nav.contact':'Contatti',
+        'section.about':'Chi sono','section.projects':'Progetti','section.skills':'Skills',
+        'section.education':'Formazione','section.languages':'Lingue','section.certs':'Certificazioni','section.contact':'Contatti',
+        'stat.age':'anni','stat.projects':'progetti','stat.certs':'certificazioni',
+        'greeting':'ciao, sono',
+        'skills.languages':'Linguaggi','skills.frameworks':'Framework','skills.soft':'Soft skills:',
+        'edu.current':'in corso','comp.label':'🏆 Competizione',
+        'cert.verify':'₿ Verify on-chain','cert.txid':'TxID Bitcoin:','cert.hash':'Hash certificato:',
+        'cert.verify-note':'Certificato verificabile tramite OpenTimestamps (.ots) e firma GPG (.asc)',
+        'contact.text':'Sono sempre aperto a nuove opportunità, collaborazioni o semplicemente a fare due chiacchiere di tech.',
+        'footer.built':'Costruito con','projects.more':'+ Altri progetti',
+      },
+      en: {
+        'nav.projects':'Projects','nav.skills':'Skills','nav.certs':'Certifications','nav.contact':'Contact',
+        'section.about':'About me','section.projects':'Projects','section.skills':'Skills',
+        'section.education':'Education','section.languages':'Languages','section.certs':'Certifications','section.contact':'Contact',
+        'stat.age':'years old','stat.projects':'projects','stat.certs':'certifications',
+        'greeting':"hi, I'm",
+        'skills.languages':'Languages','skills.frameworks':'Frameworks','skills.soft':'Soft skills:',
+        'edu.current':'ongoing','comp.label':'🏆 Competition',
+        'cert.verify':'₿ Verify on-chain','cert.txid':'Bitcoin TxID:','cert.hash':'Certificate hash:',
+        'cert.verify-note':'Certificate verifiable via OpenTimestamps (.ots) and GPG signature (.asc)',
+        'contact.text':"I'm always open to new opportunities, collaborations, or just talking tech.",
+        'footer.built':'Built with','projects.more':'+ More projects',
+      }
+    };
+
+    function applyLang(l) {
+      lang.current = l;
+      document.documentElement.lang = l;
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (t[l][key] !== undefined) el.textContent = t[l][key];
+      });
+      document.querySelectorAll('[data-it][data-en]').forEach(el => {
+        el.textContent = el.getAttribute('data-' + l) || '';
+      });
+      document.getElementById('hero-role').textContent = cvData.roles[l];
+      document.getElementById('hero-tagline').textContent = cvData.tagline[l];
+      document.getElementById('about-text').textContent = cvData.about[l];
+      document.getElementById('greeting').textContent = t[l]['greeting'];
+      document.getElementById('contact-text').textContent = t[l]['contact.text'];
+      const softSkills = cvData.softSkills[l];
+      document.querySelectorAll('#skills .card:last-of-type .badge').forEach((b, i) => {
+        if (softSkills[i]) b.textContent = softSkills[i];
+      });
+      document.getElementById('lang-toggle').textContent = l === 'it' ? 'EN' : 'IT';
+    }
+
+    document.getElementById('lang-toggle').addEventListener('click', () => {
+      applyLang(lang.current === 'it' ? 'en' : 'it');
+    });
+
+    let theme = 'dark';
+    document.getElementById('theme-toggle').addEventListener('click', () => {
+      theme = theme === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', theme);
+      document.getElementById('theme-icon').textContent = theme === 'dark' ? '☀️' : '🌙';
+    });
+
+    document.getElementById('pdf-btn').addEventListener('click', () => window.print());
+
+    // Terminal
+    const overlay = document.getElementById('terminal-overlay');
+    const body = document.getElementById('terminal-body');
+    const input = document.getElementById('terminal-input');
+
+    const commands = {
+      help: () => [
+        '<span style="color:var(--accent);font-weight:bold;">Available commands:</span>',
+        '  <span style="color:var(--accent)">whoami</span>     — chi sono',
+        '  <span style="color:var(--accent)">skills</span>     — le mie skills',
+        '  <span style="color:var(--accent)">projects</span>   — progetti',
+        '  <span style="color:var(--accent)">bitcoin</span>    — cypherpunk stuff',
+        '  <span style="color:var(--accent)">contact</span>    — come contattarmi',
+        '  <span style="color:var(--accent)">clear</span>      — pulisce il terminale',
+        '  <span style="color:var(--accent)">exit</span>       — chiude il terminale',
+      ],
+      whoami: () => [
+        '<span style="color:var(--accent);font-weight:bold;">Daniele Porcaro</span>',
+        'Studente di Informatica @ IIS J.C. Maxwell, Nichelino (TO)',
+        'Age: 18  |  GitHub: github.com/dany80213',
+        'Interessi: web dev, hardware, Bitcoin, self-hosting',
+      ],
+      skills: () => [
+        '<span style="color:var(--accent)">→ Languages:</span>  Python, JavaScript, PHP, SQL, HTML/CSS, PDL2',
+        '<span style="color:var(--accent)">→ Frameworks:</span> React, Vue.js, Next.js, Express, FastAPI',
+        '<span style="color:var(--accent)">→ Hardware:</span>   Arduino, RPi5, ESP32, RF 433MHz',
+        '<span style="color:var(--accent)">→ Networking:</span> TCP/IP, MQTT, UART, Tasmota, Routing',
+        '<span style="color:var(--accent)">→ DevOps:</span>     Git, Docker, Caddy',
+        '<span style="color:var(--accent)">→ Blockchain:</span> Bitcoin, OpenTimestamps, GPG/PGP',
+      ],
+      projects: () => [
+        '<span style="color:var(--accent)">alarm-system</span>    — Home alarm: RF, MQTT, FastAPI, RPi5',
+        '<span style="color:var(--accent)">Bitcoin Tracker</span> — BTC dashboard + AI advisor (Gemini)',
+        '<span style="color:var(--accent)">party-webapp</span>    — Event mgmt: Next.js + Prisma + Docker',
+        '<span style="color:var(--accent)">irrigation</span>      — Plant irrigation with ESP32',
+        '',
+        'github.com/dany80213',
+      ],
+      bitcoin: () => [
+        '<span style="color:var(--accent);font-weight:bold;">₿ Bitcoin:</span>',
+        '  Investo in BTC personalmente',
+        '  GPG/PGP per firma digitale',
+        '  Certificato verificabile on-chain:',
+        '  TxID: 02037933 96BBED65 46055FB0 1F1E0E15...',
+        '  Verified via OpenTimestamps (.ots) + GPG (.asc)',
+        '',
+        '<span style="color:var(--accent);font-style:italic;">Not your keys, not your coins.</span>',
+      ],
+      contact: () => [
+        '<span style="color:var(--accent)">→ Email:</span>  danielepto2@gmail.com',
+        '<span style="color:var(--accent)">→ GitHub:</span> github.com/dany80213',
+        '<span style="color:var(--accent)">→ City:</span>   Torino, IT',
+      ],
+      clear: () => { body.innerHTML = ''; return []; },
+      exit: () => { closeTerminal(); return []; },
+    };
+
+    function addLines(lines) {
+      lines.forEach(l => {
+        const div = document.createElement('div');
+        div.className = 'line';
+        div.innerHTML = `<span style="color:#94a3b8">${l}</span>`;
+        body.appendChild(div);
+      });
+      body.scrollTop = body.scrollHeight;
+    }
+
+    function printWelcome() {
+      const lines = [
+        '<span style="color:var(--accent);font-weight:bold;">Daniele Porcaro – Interactive CV Terminal</span>',
+        '<span style="color:#64748b">Type <span style="color:#fff">help</span> for available commands. Press ESC to close.</span>',
+        '',
+      ];
+      lines.forEach(l => {
+        const div = document.createElement('div');
+        div.className = 'line';
+        div.innerHTML = l;
+        body.appendChild(div);
+      });
+    }
+
+    function openTerminal() {
+      overlay.classList.add('open');
+      body.innerHTML = '';
+      printWelcome();
+      setTimeout(() => input.focus(), 100);
+    }
+    function closeTerminal() { overlay.classList.remove('open'); }
+
+    document.getElementById('terminal-btn').addEventListener('click', openTerminal);
+    overlay.addEventListener('click', e => { if (e.target === overlay) closeTerminal(); });
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') closeTerminal();
+      if ((e.ctrlKey || e.metaKey) && e.key === '`') { e.preventDefault(); openTerminal(); }
+    });
+
+    input.addEventListener('keydown', e => {
+      if (e.key !== 'Enter') return;
+      const cmd = input.value.trim().toLowerCase();
+      input.value = '';
+      if (!cmd) return;
+      const promptDiv = document.createElement('div');
+      promptDiv.className = 'line';
+      promptDiv.innerHTML = `<span style="color:var(--accent)">❯</span> <span style="color:#fff">${cmd}</span>`;
+      body.appendChild(promptDiv);
+      if (commands[cmd]) {
+        const out = commands[cmd]();
+        if (out.length) addLines(out);
+      } else {
+        addLines([`<span style="color:#ef4444">command not found: ${cmd}</span>`, 'Type <span style="color:#fff">help</span> for available commands.']);
+      }
+      addLines(['']);
+    });
+  </script>
+</Layout>
