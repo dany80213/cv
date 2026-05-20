@@ -214,6 +214,12 @@ Nichelino, 17/05/2025`,
       file: "Professional_Certification_1747739235.pdf",
       icon: "🤖",
     },
+    {
+      name: "CISCO – Introduction to Networks (ITN)",
+      description: { it: "Cisco Networking Academy – CCNA ITN", en: "Cisco Networking Academy – CCNA ITN" },
+      file: "CCNAITNUpdated20260520-32-7e2bcy.pdf",
+      icon: "🌐",
+    },
     // Aggiungi altri certificati qui:
     // { name: "Cambridge C1", description: { it: "...", en: "..." }, file: "cambridge_c1.pdf", icon: "🎓" },
   ],
