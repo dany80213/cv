@@ -75,7 +75,7 @@ Nichelino, 17/05/2025`,
     {
       name: "Cambridge English C1 Advanced",
       issuer: { it: "Cambridge University Press & Assessment", en: "Cambridge University Press & Assessment" },
-      date: { it: "Maggio 2026 (in corso)", en: "May 2026 (in progress)" },
+      date: { it: "Maggio 2026", en: "May 2026" },
       verifiable: false,
     },
     {
@@ -127,7 +127,7 @@ Nichelino, 17/05/2025`,
 
   languages: [
     { lang: "Italiano", level: { it: "Madrelingua", en: "Native" }, code: "C2" },
-    { lang: "English", level: { it: "Avanzato – C1 in corso", en: "Advanced – C1 in progress" }, code: "C1" },
+    { lang: "English", level: { it: "Avanzato (C1)", en: "Advanced (C1)" }, code: "C1" },
     { lang: "Español", level: { it: "Elementare", en: "Elementary" }, code: "A2" },
   ],
 
