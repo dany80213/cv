@@ -17,6 +17,7 @@ import { cv } from '../data/cv.ts';
     <div style="display:flex; align-items:center; gap:1.25rem;">
       <a href="#projects" class="nav-link" data-i18n="nav.projects">Progetti</a>
       <a href="#skills" class="nav-link" data-i18n="nav.skills">Skills</a>
+      <a href="#education" class="nav-link" data-i18n="nav.education">Formazione</a>
       <a href="#certifications" class="nav-link" data-i18n="nav.certs">Certificazioni</a>
       <a href="#contact" class="nav-link" data-i18n="nav.contact">Contatti</a>
       <button id="lang-toggle" class="btn btn-outline" style="padding:0.3rem 0.8rem; font-size:0.75rem;">EN</button>
@@ -31,7 +32,7 @@ import { cv } from '../data/cv.ts';
 
   <style>
     .nav-link { color: var(--text-dim); text-decoration: none; font-size: 0.82rem; transition: color 0.2s; }
-    .nav-link:hover { color: var(--accent); }
+    .nav-link:hover, .nav-link.nav-active { color: var(--accent); }
     @media(max-width:640px){ .nav-link { display: none; } }
   </style>
 
@@ -68,19 +69,19 @@ import { cv } from '../data/cv.ts';
     </div>
     <div style="margin-top:4rem; display:flex; gap:2rem; flex-wrap:wrap;">
       <div>
-        <div style="font-size:1.8rem; font-weight:700; color:var(--accent)">18</div>
+        <div style="font-size:1.8rem; font-weight:700; color:var(--accent)">{cv.age}</div>
         <div style="font-size:0.75rem; color:var(--text-muted)" data-i18n="stat.age">anni</div>
       </div>
       <div>
-        <div style="font-size:1.8rem; font-weight:700; color:var(--accent)">12+</div>
+        <div style="font-size:1.8rem; font-weight:700; color:var(--accent)">{cv.projectsCount}</div>
         <div style="font-size:0.75rem; color:var(--text-muted)" data-i18n="stat.projects">progetti</div>
       </div>
       <div>
-        <div style="font-size:1.8rem; font-weight:700; color:var(--accent)">520h</div>
+        <div style="font-size:1.8rem; font-weight:700; color:var(--accent)">{cv.pcto.hours}h</div>
         <div style="font-size:0.75rem; color:var(--text-muted)">PCTO</div>
       </div>
       <div>
-        <div style="font-size:1.8rem; font-weight:700; color:var(--accent)">5</div>
+        <div style="font-size:1.8rem; font-weight:700; color:var(--accent)">{cv.certifications.length}</div>
         <div style="font-size:0.75rem; color:var(--text-muted)" data-i18n="stat.certs">certificazioni</div>
       </div>
     </div>
@@ -167,7 +168,7 @@ import { cv } from '../data/cv.ts';
               <span style="font-size:0.82rem;">{s.name}</span>
               <span style="font-size:0.72rem; color:var(--text-muted);">{s.level}%</span>
             </div>
-            <div class="skill-bar"><div class="skill-bar-fill" style={`width:${s.level}%`}></div></div>
+            <div class="skill-bar"><div class="skill-bar-fill" style="width:0" data-level={s.level}></div></div>
           </div>
         ))}
       </div>
@@ -299,22 +300,29 @@ import { cv } from '../data/cv.ts';
       {cv.certifications.map((c, idx) => (
         <div class="card" style="padding:1.25rem 1.5rem;">
           <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:0.5rem;">
-            <div style="flex:1;">
-              <div style="display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap; margin-bottom:0.2rem;">
-                <h3 style="font-size:0.88rem; font-weight:700;">
-                  {typeof c.name === 'object' ? c.name.it : c.name}
-                </h3>
-                {'score' in c && c.score && (
-                  <span class="badge" style="border-color:var(--accent); color:var(--accent); font-size:0.7rem;">
-                    {c.score}
-                  </span>
-                )}
+            <div style="flex:1; display:flex; gap:0.75rem; align-items:flex-start;">
+              {'logo' in c && c.logo && (
+                <div style="width:34px; height:34px; border-radius:6px; background:#fff; flex-shrink:0; display:flex; align-items:center; justify-content:center; padding:4px; overflow:hidden; margin-top:1px;">
+                  <img src={c.logo as string} alt="" width="26" height="26" style="object-fit:contain; display:block;" loading="lazy" />
+                </div>
+              )}
+              <div style="flex:1;">
+                <div style="display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap; margin-bottom:0.2rem;">
+                  <h3 style="font-size:0.88rem; font-weight:700;">
+                    {typeof c.name === 'object' ? c.name.it : c.name}
+                  </h3>
+                  {'score' in c && c.score && (
+                    <span class="badge" style="border-color:var(--accent); color:var(--accent); font-size:0.7rem;">
+                      {c.score}
+                    </span>
+                  )}
+                </div>
+                <p class="cert-issuer" style="font-size:0.78rem; color:var(--text-muted);"
+                   data-it={typeof c.issuer === 'object' ? c.issuer.it : c.issuer}
+                   data-en={typeof c.issuer === 'object' ? c.issuer.en : c.issuer}>
+                  {typeof c.issuer === 'object' ? c.issuer.it : c.issuer}
+                </p>
               </div>
-              <p class="cert-issuer" style="font-size:0.78rem; color:var(--text-muted);"
-                 data-it={typeof c.issuer === 'object' ? c.issuer.it : c.issuer}
-                 data-en={typeof c.issuer === 'object' ? c.issuer.en : c.issuer}>
-                {typeof c.issuer === 'object' ? c.issuer.it : c.issuer}
-              </p>
             </div>
             <div style="text-align:right; flex-shrink:0; display:flex; flex-direction:column; align-items:flex-end; gap:0.4rem;">
               <span class="cert-date" style="font-size:0.78rem; color:var(--accent);"
@@ -416,7 +424,7 @@ import { cv } from '../data/cv.ts';
   <footer style="border-top:1px solid var(--border); padding:1.5rem 2rem; text-align:center;">
     <p style="font-size:0.75rem; color:var(--text-muted);">
       <span data-i18n="footer.built">Costruito con</span> Astro + Tailwind ·
-      <span style="color:var(--accent)">Daniele Porcaro</span> · 2025
+      <span style="color:var(--accent)">Daniele Porcaro</span> · 2026
     </p>
   </footer>
 
@@ -441,7 +449,7 @@ import { cv } from '../data/cv.ts';
     const lang = { current: 'it' };
     const t = {
       it: {
-        'nav.projects':'Progetti','nav.skills':'Skills','nav.certs':'Certificazioni','nav.contact':'Contatti',
+        'nav.projects':'Progetti','nav.skills':'Skills','nav.education':'Formazione','nav.certs':'Certificazioni','nav.contact':'Contatti',
         'section.about':'Chi sono','section.projects':'Progetti','section.skills':'Skills',
         'section.education':'Formazione','section.languages':'Lingue','section.certs':'Certificazioni','section.contact':'Contatti',
         'stat.age':'anni','stat.projects':'progetti','stat.certs':'certificazioni',
@@ -455,7 +463,7 @@ import { cv } from '../data/cv.ts';
         'certs.download':'Scarica certificati',
       },
       en: {
-        'nav.projects':'Projects','nav.skills':'Skills','nav.certs':'Certifications','nav.contact':'Contact',
+        'nav.projects':'Projects','nav.skills':'Skills','nav.education':'Education','nav.certs':'Certifications','nav.contact':'Contact',
         'section.about':'About me','section.projects':'Projects','section.skills':'Skills',
         'section.education':'Education','section.languages':'Languages','section.certs':'Certifications','section.contact':'Contact',
         'stat.age':'years old','stat.projects':'projects','stat.certs':'certifications',
@@ -576,6 +584,13 @@ import { cv } from '../data/cv.ts';
     const body = document.getElementById('terminal-body');
     const input = document.getElementById('terminal-input');
 
+    function escapeHtml(s) {
+      return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    const cmdHistory = [];
+    let historyIndex = -1;
+
     const commands = {
       help: () => [
         '<span style="color:var(--accent);font-weight:bold;">Available commands:</span>',
@@ -668,21 +683,74 @@ import { cv } from '../data/cv.ts';
     });
 
     input.addEventListener('keydown', e => {
+      if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        if (historyIndex < cmdHistory.length - 1) {
+          historyIndex++;
+          input.value = cmdHistory[historyIndex];
+        }
+        return;
+      }
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        if (historyIndex > 0) {
+          historyIndex--;
+          input.value = cmdHistory[historyIndex];
+        } else {
+          historyIndex = -1;
+          input.value = '';
+        }
+        return;
+      }
       if (e.key !== 'Enter') return;
       const cmd = input.value.trim().toLowerCase();
       input.value = '';
       if (!cmd) return;
+      if (cmdHistory[0] !== cmd) cmdHistory.unshift(cmd);
+      historyIndex = -1;
       const promptDiv = document.createElement('div');
       promptDiv.className = 'line';
-      promptDiv.innerHTML = `<span style="color:var(--accent)">❯</span> <span style="color:#fff">${cmd}</span>`;
+      promptDiv.innerHTML = `<span style="color:var(--accent)">❯</span> <span style="color:#fff">${escapeHtml(cmd)}</span>`;
       body.appendChild(promptDiv);
       if (commands[cmd]) {
         const out = commands[cmd]();
         if (out.length) addLines(out);
       } else {
-        addLines([`<span style="color:#ef4444">command not found: ${cmd}</span>`, 'Type <span style="color:#fff">help</span> for available commands.']);
+        addLines([`<span style="color:#ef4444">command not found: ${escapeHtml(cmd)}</span>`, 'Type <span style="color:#fff">help</span> for available commands.']);
       }
       addLines(['']);
     });
+
+    // Skill bars: animate on scroll
+    const skillsSection = document.getElementById('skills');
+    if (skillsSection) {
+      const skillObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.querySelectorAll('.skill-bar-fill[data-level]').forEach(bar => {
+              bar.style.width = bar.dataset.level + '%';
+            });
+            skillObserver.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.15 });
+      skillObserver.observe(skillsSection);
+    }
+
+    // Active nav link on scroll
+    const navSections = document.querySelectorAll('section[id]');
+    const navLinks = document.querySelectorAll('.nav-link[href^="#"]');
+    if (navSections.length && navLinks.length) {
+      const activeObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            navLinks.forEach(link => {
+              link.classList.toggle('nav-active', link.getAttribute('href') === '#' + entry.target.id);
+            });
+          }
+        });
+      }, { threshold: 0, rootMargin: '-20% 0px -60% 0px' });
+      navSections.forEach(s => activeObserver.observe(s));
+    }
   </script>
 </Layout>
