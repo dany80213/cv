@@ -30,8 +30,8 @@ export const cv = {
       period: "2021 – 2027",
       current: true,
       highlights: {
-        it: ["Voto 10 in Sistemi e Reti", "Voto 10 in TPSIT", "Voto 9–10 in Informatica"],
-        en: ["Grade 10/10 in Networks & Systems", "Grade 10/10 in TPSIT", "Grade 9–10/10 in Computer Science"],
+        it: ["Voto 10 in Sistemi e Reti", "Voto 10 in TPSIT", "Voto 10 in Informatica"],
+        en: ["Grade 10/10 in Networks & Systems", "Grade 10/10 in TPSIT", "Grade 10/10 in Computer Science"],
       },
     },
     {
