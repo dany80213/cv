@@ -34,6 +34,9 @@ export const cv = {
 /** Snapshot of each project's GitHub repo, keyed by project slug (refreshed by `npm run sync:github` or the admin page). */
 export interface GithubSnapshot {
   repo: string;
+  owner: string | null;
+  fork: boolean;
+  parent: string | null;
   stars: number;
   forks: number;
   issues: number;

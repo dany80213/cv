@@ -56,6 +56,27 @@
       "featured": true
     },
     {
+      "name": "MenuStats",
+      "slug": "menustats",
+      "description": {
+        "it": "Monitor di sistema per la barra dei menu di macOS (CPU, memoria, disco, rete, temperature, ventole, batteria), ispirato a iStat Menus.",
+        "en": "macOS menu bar system monitor (CPU, memory, disk, network, temperatures, fans, battery), inspired by iStat Menus."
+      },
+      "contribution": {
+        "it": "Contributore al progetto di Thomas Addamo, con 8 pull request unite: sensori SMC per Apple M4 Pro, il modulo «Sveglio» per tenere il Mac acceso, la mappa dei dispositivi vicini con blocco automatico del Mac, la posizione automatica per il Meteo con IP pubblico e VPN nella scheda Rete, e correzioni alla barra dei menu (più monitor, microfono in uso, ridimensionamento).",
+        "en": "Contributor to Thomas Addamo's project, with 8 merged pull requests: SMC sensors for Apple M4 Pro, the “Keep awake” module, a nearby-devices map with automatic Mac locking, automatic location for Weather with public IP and VPN in the Network tab, and menu bar fixes (multiple displays, microphone in use, resizing)."
+      },
+      "tech": [
+        "Swift",
+        "SwiftUI",
+        "AppKit",
+        "IOKit",
+        "SQLite"
+      ],
+      "url": "https://github.com/thomas-addamo/MenuStats",
+      "featured": true
+    },
+    {
       "name": "irrigation-system",
       "slug": "irrigation-system",
       "description": {

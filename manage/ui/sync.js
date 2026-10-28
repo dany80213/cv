@@ -23,6 +23,9 @@ export async function fetchSnapshot(repo, get) {
   const license = info.license?.spdx_id;
   return {
     repo: info.full_name,
+    owner: info.owner?.login ?? null,
+    fork: !!info.fork,
+    parent: info.parent?.full_name ?? null,
     stars: info.stargazers_count,
     forks: info.forks_count,
     issues: info.open_issues_count,

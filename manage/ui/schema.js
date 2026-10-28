@@ -126,6 +126,7 @@ export const FILES = [
         str('slug', 'Indirizzo della pagina', { pattern: /^[a-z0-9]+(-[a-z0-9]+)*$/, patternHint: 'solo minuscole, numeri e trattini (es. alarm-system)', unique: true, hint: 'La pagina sarà /progetti/<indirizzo>/. Cambiarlo rompe i vecchi link.' }),
         pair('description', 'Descrizione breve', { multiline: true, hint: 'Compare nella card e in cima alla pagina del progetto' }),
         pair('longDescription', 'Testo esteso', { multiline: true, required: false, rows: 8, hint: 'Facoltativo. Supporta Markdown: **grassetto**, elenchi, [link](https://…)' }),
+        pair('contribution', 'Il mio contributo', { multiline: true, required: false, rows: 5, hint: 'Solo per progetti di altri o in collaborazione: cosa hai fatto tu. Compare in evidenza nella pagina (Markdown ammesso)' }),
         strlist('tech', 'Tecnologie'),
         opt('url', 'Link', { inputType: 'url', hint: 'GitHub o sito. Se è un repository GitHub, la sincronizzazione usa questo indirizzo' }),
         { type: 'list', key: 'images', label: 'Immagini', required: false, itemLabel: (i) => i.file || 'Nuova immagine', addLabel: 'Aggiungi immagine', fields: [
