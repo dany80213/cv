@@ -2,6 +2,11 @@
 import Layout from '../layouts/Layout.astro';
 import { cv, github } from '../data/cv.ts';
 import { icon, iconSet } from '../lib/icons.ts';
+import { Image } from 'astro:assets';
+import { projectImage } from '../lib/project-images.ts';
+import GeneratedCover from '../components/GeneratedCover.astro';
+
+const cover = (p: any) => projectImage(p.images?.[0]?.file);
 ---
 <Layout>
   <!-- NAV -->
@@ -103,7 +108,10 @@ import { icon, iconSet } from '../lib/icons.ts';
     <h2 class="section-title" data-i18n="section.projects">Progetti</h2>
     <div style="display:grid; gap:1.25rem;">
       {cv.projects.filter(p => p.featured).map(p => (
-        <div class="card" style="padding:1.5rem;">
+        <div class="card" style="padding:1.5rem; --pad:1.5rem;">
+          <a class="proj-cover" href={`/progetti/${p.slug}/`} data-href={`/progetti/${p.slug}/`} tabindex="-1" aria-hidden="true">
+            {cover(p) ? <Image src={cover(p)!} widths={[480, 800, 1200]} sizes="(max-width: 900px) 92vw, 820px" format="webp" quality={80} alt="" loading="lazy" /> : <GeneratedCover slug={p.slug} tech={p.tech ?? []} />}
+          </a>
           <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:0.75rem; margin-bottom:0.75rem;">
             <h3 style="font-size:1rem; font-weight:700; color:var(--text);">
               <a class="proj-link" href={`/progetti/${p.slug}/`} data-href={`/progetti/${p.slug}/`}>{typeof p.name === 'string' ? p.name : p.name.it}</a>
@@ -137,7 +145,10 @@ import { icon, iconSet } from '../lib/icons.ts';
                  data-i18n="projects.more">+ Altri progetti</summary>
         <div style="display:grid; gap:1rem; margin-top:1rem;">
           {cv.projects.filter(p => !p.featured).map(p => (
-            <div class="card" style="padding:1.25rem;">
+            <div class="card" style="padding:1.25rem; --pad:1.25rem;">
+              <a class="proj-cover small" href={`/progetti/${p.slug}/`} data-href={`/progetti/${p.slug}/`} tabindex="-1" aria-hidden="true">
+                {cover(p) ? <Image src={cover(p)!} widths={[480, 800]} sizes="(max-width: 900px) 92vw, 780px" format="webp" quality={80} alt="" loading="lazy" /> : <GeneratedCover slug={p.slug} tech={p.tech ?? []} />}
+              </a>
               <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
                 <h4 style="font-size:0.9rem; font-weight:700; color:var(--text);">
                   <a class="proj-link" href={`/progetti/${p.slug}/`} data-href={`/progetti/${p.slug}/`}>{typeof p.name === 'string' ? p.name : p.name.it}</a>

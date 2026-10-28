@@ -31,6 +31,12 @@ Private repos: the page keeps showing the snapshot but hides every link to the r
 
 Nothing is fetched automatically and visitors never contact GitHub: the data is a snapshot baked into the pages at build time (READMEs are sanitized and their images dropped). `npm run sync:github` does the same from a terminal.
 
+## Project images
+
+Images live in `src/assets/projects/` and are optimized by Astro at build time (WebP, several widths). The **first** image of a project is its cover on the home card and at the top of its page; the rest form a gallery with a full-screen viewer. Projects without images get a generated terminal-style cover.
+The admin page resizes uploads to 1800 px on the long side and converts them to WebP in the browser before committing (this also strips EXIF/GPS data). Alt texts are used as captions.
+Before publishing a screenshot, check it shows no personal data (IPs, locations, app lists, names).
+
 ## Editing the schema
 
 If you add a key to a JSON file in `src/data/content/`, add the matching field in `ui/schema.js`. Keys the page does not know are preserved on save but cannot be edited.

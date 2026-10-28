@@ -1,0 +1,12 @@
+---
+// Cover used when a project has no image: a small terminal window with the project name and stack.
+interface Props { slug: string; tech?: string[] }
+const { slug, tech = [] } = Astro.props;
+---
+<div class="gen-cover" aria-hidden="true">
+  <div class="gen-bar"><i></i><i></i><i></i><span>~/progetti/{slug}</span></div>
+  <div class="gen-body">
+    <p class="gen-cmd">cat stack.txt</p>
+    {tech.slice(0, 6).map((t) => <p class="gen-line">{t}</p>)}
+  </div>
+</div>

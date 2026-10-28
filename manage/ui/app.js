@@ -322,6 +322,27 @@ function listEl(f, obj) {
   return h('div', { class: 'wide' }, h('div', { class: 'list-title' }, f.label), host);
 }
 
+// ---------- image optimization (runs in the browser before the upload) ----------
+// Resizes to maxSide, re-encodes as WebP (which also drops EXIF/GPS metadata) and returns a small preview.
+async function optimizeImage(file, { maxSide = 1800, quality = 0.84 } = {}) {
+  const bmp = await createImageBitmap(file, { imageOrientation: 'from-image' });
+  const scale = Math.min(1, maxSide / Math.max(bmp.width, bmp.height));
+  const w = Math.max(1, Math.round(bmp.width * scale));
+  const h = Math.max(1, Math.round(bmp.height * scale));
+  const canvas = document.createElement('canvas');
+  canvas.width = w; canvas.height = h;
+  canvas.getContext('2d').drawImage(bmp, 0, 0, w, h);
+  const blob = await new Promise((res) => canvas.toBlob(res, 'image/webp', quality));
+  if (!blob || blob.type !== 'image/webp') throw new Error('questo browser non riesce a convertire in WebP');
+  const name = file.name.replace(/\.[^.]+$/, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') + '.webp';
+  const thumb = document.createElement('canvas');
+  const k = Math.min(1, 240 / w);
+  thumb.width = Math.round(w * k); thumb.height = Math.round(h * k);
+  thumb.getContext('2d').drawImage(canvas, 0, 0, thumb.width, thumb.height);
+  return { file: new File([blob], name, { type: 'image/webp' }), preview: thumb.toDataURL('image/webp', 0.7), width: w, height: h };
+}
+const previews = {};   // file name -> small data URL, for images uploaded in this session
+
 // ---------- file picker (existing files + upload) ----------
 function fileEl(f, obj) {
   const stored = () => obj[f.key];
@@ -333,6 +354,11 @@ function fileEl(f, obj) {
   const drawNote = () => {
     const n = nameOf(stored());
     if (!n) { note.replaceChildren(h('span', {}, 'Nessun file selezionato')); return; }
+    if (f.noPublicUrl) {
+      // The file is processed at build time, so there is no public address to link to.
+      note.replaceChildren(previews[n] ? h('img', { src: previews[n], alt: '' }) : ico('file-text'), h('span', {}, `${f.folder}/${n}`));
+      return;
+    }
     const url = `${SITE}${f.publicPrefix}${n}`;
     const isImg = /\.(svg|png|webp|jpe?g)$/i.test(n);
     note.replaceChildren(isImg ? h('img', { src: url, alt: '' }) : ico('file-text'), h('a', { href: url, target: '_blank', rel: 'noopener' }, `${f.publicPrefix}${n}`));
@@ -363,18 +389,26 @@ function fileEl(f, obj) {
     if (!file) return;
     const ext = '.' + file.name.split('.').pop().toLowerCase();
     if (f.accept && !f.accept.split(',').includes(ext)) return toast(`Formato non valido: servono file ${f.accept}`, 'err');
-    if (!/^[\w.\- ()]+$/.test(file.name)) return toast('Il nome del file contiene caratteri non ammessi. Usa lettere, numeri, trattini e punti.', 'err');
+    if (!f.optimize && !/^[\w.\- ()]+$/.test(file.name)) return toast('Il nome del file contiene caratteri non ammessi. Usa lettere, numeri, trattini e punti.', 'err');
     const maxMB = f.maxMB ?? 10;
     if (file.size > maxMB * 1024 * 1024) return toast(`File troppo grande (massimo ${maxMB} MB).`, 'err');
     upload.disabled = true;
     try {
-      const name = await api.uploadFile(f.folder, file);
+      let toSend = file;
+      let note2 = '';
+      if (f.optimize) {
+        const opt = await optimizeImage(file, f.optimize);
+        toSend = opt.file;
+        previews[opt.file.name] = opt.preview;
+        note2 = ` (${opt.width}×${opt.height}, ${Math.max(1, Math.round(opt.file.size / 1024))} KB)`;
+      }
+      const name = await api.uploadFile(f.folder, toSend);
       const names = await dirCache[f.folder].catch(() => []);
       if (!names.includes(name)) names.push(name);
       names.sort((a, b) => a.localeCompare(b));
       obj[f.key] = f.storePath ? f.publicPrefix + name : name;
       fill(names); drawNote(); changed();
-      toast(`«${name}» caricato su GitHub.`);
+      toast(`«${name}»${note2} caricato su GitHub.`);
     } catch (e) {
       toast(`Caricamento non riuscito: ${e.message}`, 'err');
     } finally { upload.disabled = false; }
