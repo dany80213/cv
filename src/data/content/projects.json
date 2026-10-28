@@ -150,6 +150,22 @@
         "JavaScript",
         "MQTT"
       ],
+      "images": [
+        {
+          "file": "irrigation-system-1-controllo.webp",
+          "alt": {
+            "it": "Dashboard di irrigation-system: stato del dispositivo, pompa accesa, controllo manuale e irrigazione a tempo (schermata con ESP32 simulato).",
+            "en": "irrigation-system dashboard: device status, pump on, manual control and timed irrigation (screenshot with a simulated ESP32)."
+          }
+        },
+        {
+          "file": "irrigation-system-2-programmazione.webp",
+          "alt": {
+            "it": "Programmazione settimanale: scelta di giorni, orario e durata, con l'elenco delle irrigazioni pianificate (dati di esempio).",
+            "en": "Weekly scheduler: pick days, time and duration, with the list of planned runs (sample data)."
+          }
+        }
+      ],
       "url": "https://github.com/dany80213/irrigation-system",
       "featured": false
     },
