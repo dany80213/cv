@@ -34,6 +34,9 @@ export const cv = {
 /** Snapshot of each project's GitHub repo, keyed by project slug (refreshed by `npm run sync:github` or the admin page). */
 export interface GithubSnapshot {
   repo: string;
+  owner: string | null;
+  fork: boolean;
+  parent: string | null;
   stars: number;
   forks: number;
   issues: number;
@@ -44,6 +47,8 @@ export interface GithubSnapshot {
   homepage: string | null;
   defaultBranch: string;
   archived: boolean;
+  /** Private repos keep their snapshot, but the pages do not link to them (the link would 404). */
+  private: boolean;
   createdAt: string;
   pushedAt: string;
   readme: string | null;

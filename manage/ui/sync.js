@@ -23,6 +23,9 @@ export async function fetchSnapshot(repo, get) {
   const license = info.license?.spdx_id;
   return {
     repo: info.full_name,
+    owner: info.owner?.login ?? null,
+    fork: !!info.fork,
+    parent: info.parent?.full_name ?? null,
     stars: info.stargazers_count,
     forks: info.forks_count,
     issues: info.open_issues_count,
@@ -33,6 +36,7 @@ export async function fetchSnapshot(repo, get) {
     homepage: info.homepage || null,
     defaultBranch: info.default_branch,
     archived: !!info.archived,
+    private: !!info.private,
     createdAt: info.created_at,
     pushedAt: info.pushed_at,
     readme: readme ? readme.slice(0, MAX_README) : null,
@@ -55,7 +59,7 @@ export async function syncProjects(projects, existing, get, onProgress = () => {
       data[p.slug] = await fetchSnapshot(repo, get);
       res.synced.push(p.slug);
     } catch (e) {
-      res.failed.push({ slug: p.slug, error: e.message });
+      res.failed.push({ slug: p.slug, error: e.status === 404 ? 'repository non accessibile (privato?)' : e.message });
     }
   }
   // Drop snapshots of projects that no longer exist.

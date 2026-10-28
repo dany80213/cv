@@ -56,6 +56,50 @@
       "featured": true
     },
     {
+      "name": "MenuStats",
+      "slug": "menustats",
+      "description": {
+        "it": "Monitor di sistema per la barra dei menu di macOS (CPU, memoria, disco, rete, temperature, ventole, batteria), ispirato a iStat Menus.",
+        "en": "macOS menu bar system monitor (CPU, memory, disk, network, temperatures, fans, battery), inspired by iStat Menus."
+      },
+      "contribution": {
+        "it": "Contributore al progetto di Thomas Addamo, con 8 pull request unite: sensori SMC per Apple M4 Pro, il modulo «Sveglio» per tenere il Mac acceso, la mappa dei dispositivi vicini con blocco automatico del Mac, la posizione automatica per il Meteo con IP pubblico e VPN nella scheda Rete, e correzioni alla barra dei menu (più monitor, microfono in uso, ridimensionamento).",
+        "en": "Contributor to Thomas Addamo's project, with 8 merged pull requests: SMC sensors for Apple M4 Pro, the “Keep awake” module, a nearby-devices map with automatic Mac locking, automatic location for Weather with public IP and VPN in the Network tab, and menu bar fixes (multiple displays, microphone in use, resizing)."
+      },
+      "tech": [
+        "Swift",
+        "SwiftUI",
+        "AppKit",
+        "IOKit",
+        "SQLite"
+      ],
+      "url": "https://github.com/thomas-addamo/MenuStats",
+      "featured": true
+    },
+    {
+      "name": "NotchApp",
+      "slug": "notchapp",
+      "description": {
+        "it": "App macOS in SwiftUI e AppKit che trasforma il notch del MacBook in un pannello interattivo, con widget, schede e trascinamento di file.",
+        "en": "macOS app in SwiftUI and AppKit that turns the MacBook notch into an interactive panel, with widgets, tabs and file drag and drop."
+      },
+      "contribution": {
+        "it": "Sviluppato insieme ad Alessandro Guttadauro, proprietario del repository (oltre 30 commit miei): controlli Now Playing per Music e Spotify con riconoscimento di YouTube nel browser, scheda Shelf con trascinamento di file e AirDrop, timer visibile a notch chiuso, widget opzionali (note, timer, calendario), aggiornamento automatico dalle release GitHub con workflow di rilascio, e impostazioni con anteprima del notch.",
+        "en": "Built together with Alessandro Guttadauro, the repository owner (30+ of my commits): Now Playing controls for Music and Spotify with YouTube detection in the browser, a Shelf tab with file drag and drop and AirDrop, a timer visible with the notch closed, optional widgets (notes, timer, calendar), automatic updates from GitHub releases with a release workflow, and settings with a notch preview."
+      },
+      "tech": [
+        "Swift",
+        "SwiftUI",
+        "AppKit",
+        "EventKit",
+        "AppleScript",
+        "GitHub Actions"
+      ],
+      "url": "https://github.com/alessandro-guttadauro/notch-app",
+      "mirrorReadme": true,
+      "featured": true
+    },
+    {
       "name": "irrigation-system",
       "slug": "irrigation-system",
       "description": {

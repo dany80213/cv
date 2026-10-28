@@ -21,6 +21,7 @@ const pick = (v: any, l: Lang) => (v && typeof v === 'object' ? (v[l] ?? v.it) :
 const T = {
   it: {
     back: 'Progetti', repo: 'Repository', site: 'Sito', desc: 'Descrizione', shots: 'Immagini', readme: 'README',
+    by: 'Repository di', fork: 'Fork di', contribution: 'Il mio contributo', readmeLink: 'Leggi il README su GitHub',
     stars: 'stelle', forks: 'fork', updated: 'ultimo aggiornamento', license: 'licenza', language: 'linguaggio principale',
     langs: 'Linguaggi', more: 'Altri progetti', archived: 'archiviato',
     note: (d: string) => `Importato da GitHub il ${d}, nella lingua originale del repository.`,
@@ -28,6 +29,7 @@ const T = {
   },
   en: {
     back: 'Projects', repo: 'Repository', site: 'Website', desc: 'Description', shots: 'Images', readme: 'README',
+    by: 'Repository by', fork: 'Fork of', contribution: 'My contribution', readmeLink: 'Read the README on GitHub',
     stars: 'stars', forks: 'forks', updated: 'last updated', license: 'license', language: 'main language',
     langs: 'Languages', more: 'More projects', archived: 'archived',
     note: (d: string) => `Imported from GitHub on ${d}, in the repository's original language.`,
@@ -50,7 +52,13 @@ const langBar = (() => {
 
 const pct = (v: number, l: Lang) => (v < 0.1 ? (l === 'it' ? '<0,1%' : '<0.1%') : `${v.toFixed(1).replace('.', l === 'it' ? ',' : '.')}%`);
 
-const readmeHtml = gh?.readme
+// Third-party repos (other owners) are credited and linked, but their README is not copied onto this site.
+const own = !!gh && gh.owner === cv.github;
+// Mirrored for own repos, or when the owner agreed (mirrorReadme in the admin page).
+const mirror = own || !!p.mirrorReadme;
+// A private repo keeps its data on the page, but links to it would 404 for visitors.
+const linkable = !!p.url && !gh?.private;
+const readmeHtml = gh?.readme && mirror
   ? renderMarkdown(gh.readme, { repo: gh.repo, branch: gh.defaultBranch, demoteHeadings: 1, stripEmoji: true })
   : '';
 const description = pick(p.description, 'it');
@@ -73,12 +81,25 @@ const nameIt = pick(p.name, 'it');
         <header>
           <h1>{pick(p.name, l)}</h1>
           <p class="pj-lead">{pick(p.description, l)}</p>
+          {gh && !own && (
+            <p class="pj-credit">
+              {T[l].by} <a href={`https://github.com/${gh.owner}`} target="_blank" rel="noopener">@{gh.owner}</a>
+              {gh.parent && <> · {T[l].fork} <a href={`https://github.com/${gh.parent}`} target="_blank" rel="noopener">{gh.parent}</a></>}
+            </p>
+          )}
           <div class="pj-tags">{(p.tech ?? []).map((t: string) => <span class="badge">{t}</span>)}</div>
           <div class="pj-actions">
-            {p.url && <a href={p.url} target="_blank" rel="noopener" class="btn btn-primary"><Fragment set:html={icon('github')} /> {T[l].openOnGh}</a>}
+            {linkable && <a href={p.url} target="_blank" rel="noopener" class="btn btn-primary"><Fragment set:html={icon('github')} /> {T[l].openOnGh}</a>}
             {gh?.homepage && <a href={gh.homepage} target="_blank" rel="noopener" class="btn btn-outline"><Fragment set:html={icon('external-link')} /> {T[l].site}</a>}
           </div>
         </header>
+
+        {pick(p.contribution, l) && (
+          <section class="pj-contrib">
+            <h2>{T[l].contribution}</h2>
+            <div class="md" set:html={renderMarkdown(pick(p.contribution, l), { demoteHeadings: 2 })}></div>
+          </section>
+        )}
 
         {gh && (
           <section class="pj-stats" aria-label="GitHub">
@@ -125,12 +146,22 @@ const nameIt = pick(p.name, 'it');
       </article>
     ))}
 
+    {gh && !mirror && !gh.private && gh.readme && (
+      <section class="pj-readme">
+        {langs.map((l) => (
+          <p class="pj-note" data-lang={l} hidden={l !== 'it'}>
+            <a href={`https://github.com/${gh.repo}#readme`} target="_blank" rel="noopener">{T[l].readmeLink}</a>
+          </p>
+        ))}
+      </section>
+    )}
+
     {readmeHtml && (
       <section class="pj-readme">
         <h2>README</h2>
         {langs.map((l) => (
           <p class="pj-note" data-lang={l} hidden={l !== 'it'}>
-            {T[l].note(fmt(gh.fetchedAt, l, true))} <a href={`https://github.com/${gh.repo}#readme`} target="_blank" rel="noopener">{T[l].openOnGh}</a>
+            {T[l].note(fmt(gh.fetchedAt, l, true))} {!gh.private && <a href={`https://github.com/${gh.repo}#readme`} target="_blank" rel="noopener">{T[l].openOnGh}</a>}
           </p>
         ))}
         <div class="md card" set:html={readmeHtml}></div>
@@ -164,6 +195,8 @@ const nameIt = pick(p.name, 'it');
     .pj-theme { background: none; border: none; cursor: pointer; color: var(--text-dim); font-size: 1.2rem; line-height: 1; display: inline-flex; }
     .pj h1 { font-size: clamp(1.8rem, 5vw, 2.8rem); font-weight: 700; line-height: 1.15; margin-bottom: 0.75rem; }
     .pj-lead { color: var(--text-dim); font-size: 0.98rem; line-height: 1.75; max-width: 680px; margin-bottom: 1.25rem; }
+    .pj-credit { color: var(--text-muted); font-size: 0.8rem; margin: -0.5rem 0 1.25rem; }
+    .pj-credit a { color: var(--accent); }
     .pj-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 1.5rem; }
     .pj-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 2.5rem; }
     .pj h2 { font-size: 0.8rem; color: var(--accent); letter-spacing: 0.12em; text-transform: uppercase; margin: 2.5rem 0 1rem; display: flex; align-items: center; gap: 0.75rem; }
@@ -182,6 +215,7 @@ const nameIt = pick(p.name, 'it');
     .pj-shots img { display: block; width: 100%; height: auto; }
     .pj-shots figcaption { padding: 0.6rem 0.9rem; font-size: 0.76rem; color: var(--text-muted); }
     .pj-note { color: var(--text-muted); font-size: 0.76rem; margin-bottom: 1rem; }
+    .pj-readme > .pj-note:first-child { margin-top: 2rem; font-size: 0.82rem; }
     .pj-note a, .md a { color: var(--accent); }
     .pj-more ul { list-style: none; display: grid; gap: 0.5rem; }
     .pj-more a { color: var(--text-dim); text-decoration: none; }
@@ -207,6 +241,9 @@ const nameIt = pick(p.name, 'it');
     .md th { background: var(--bg); color: var(--text); }
     .md hr { border: none; border-top: 1px solid var(--border); margin: 1.5rem 0; }
     .md summary { cursor: pointer; color: var(--text); }
+    .md .task { display: inline-block; width: 0.85em; height: 0.85em; margin-right: 0.45rem; border: 1.5px solid var(--text-muted); border-radius: 3px; vertical-align: -0.1em; }
+    .md .task.done { background: var(--accent); border-color: var(--accent); }
+    .md li:has(> .task:first-child) { list-style: none; margin-left: -1.1rem; }
   </style>
 
   <script define:vars={{ sunIcon: icon('sun', { size: '1.2rem' }), moonIcon: icon('moon', { size: '1.2rem' }) }}>
