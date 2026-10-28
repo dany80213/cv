@@ -1,0 +1,86 @@
+{
+  "projects": [
+    {
+      "name": "alarm-system",
+      "description": {
+        "it": "Sistema antifurto self-hosted con sensori RF 433 MHz, bridge Tasmota/MQTT, REST API (FastAPI), dashboard web real-time e logica multi-zona.",
+        "en": "Self-hosted home alarm system with RF 433 MHz sensors, Tasmota/MQTT bridge, REST API (FastAPI), real-time web dashboard and multi-zone logic."
+      },
+      "tech": [
+        "Python",
+        "FastAPI",
+        "MQTT",
+        "Tasmota",
+        "UART",
+        "JavaScript",
+        "RPi5"
+      ],
+      "url": "https://github.com/dany80213/alarm-system",
+      "featured": true
+    },
+    {
+      "name": "Bitcoin Tracker – Axial Corona",
+      "description": {
+        "it": "Dashboard personale per Bitcoin con analisi tecnica avanzata (RSI, MACD, Fibonacci, ATR) e AI advisor integrato via Google Gemini.",
+        "en": "Personal Bitcoin dashboard with advanced technical analysis (RSI, MACD, Fibonacci, ATR) and integrated AI advisor powered by Google Gemini."
+      },
+      "tech": [
+        "React 19",
+        "Express",
+        "Gemini API",
+        "Coinbase WS",
+        "JWT",
+        "Recharts"
+      ],
+      "url": "https://github.com/dany80213/Bitcoin-Tracker",
+      "featured": true
+    },
+    {
+      "name": "party-webapp",
+      "description": {
+        "it": "Web app full-stack per organizzare feste: inviti con QR code, calendario, autenticazione, notifiche email via Google APIs.",
+        "en": "Full-stack web app for party management: QR-coded invites, calendar integration, authentication and email notifications via Google APIs."
+      },
+      "tech": [
+        "Next.js 15",
+        "React 19",
+        "TypeScript",
+        "Prisma",
+        "PostgreSQL",
+        "Docker"
+      ],
+      "url": "",
+      "featured": true
+    },
+    {
+      "name": "irrigation-system",
+      "description": {
+        "it": "Sistema di irrigazione automatica per piante con ESP32, gestione via web e schedulazione.",
+        "en": "Automatic plant irrigation system using ESP32 with web-based control and scheduling."
+      },
+      "tech": [
+        "ESP32",
+        "JavaScript",
+        "MQTT"
+      ],
+      "url": "https://github.com/dany80213/irrigation-system",
+      "featured": false
+    },
+    {
+      "name": "Caldaia Smart",
+      "name_en": "Smart Boiler",
+      "description": {
+        "it": "Sistema di controllo caldaia con Arduino, display Nextion, sensori di temperatura. Progetto collaborativo scolastico.",
+        "en": "Boiler control system using Arduino, Nextion touchscreen display and temperature sensors. Collaborative school project."
+      },
+      "tech": [
+        "Arduino",
+        "C++",
+        "Nextion HMI",
+        "Sensori"
+      ],
+      "url": "",
+      "featured": false
+    }
+  ]
+}

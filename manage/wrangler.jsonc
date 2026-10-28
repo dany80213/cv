@@ -1,0 +1,8 @@
+{
+  "name": "cv-manage",
+  "main": "worker.js",
+  "compatibility_date": "2026-10-01",
+  "workers_dev": false,
+  "routes": [{ "pattern": "manage.retenasa.dev", "custom_domain": true }],
+  "vars": { "ALLOWED_USER": "dany80213" }
+}
