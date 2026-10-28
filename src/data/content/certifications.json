@@ -1,0 +1,108 @@
+{
+  "certifications": [
+    {
+      "date": "09/05/2025",
+      "name": "Cypherpunk 2140 – Proof of Knowledge",
+      "logo": "/assets/logos/bitcoin.svg",
+      "issuer": {
+        "it": "IIS J.C. Maxwell / Progetto Futura (PNRR)",
+        "en": "IIS J.C. Maxwell / Futura Project (PNRR)"
+      },
+      "verifiable": true,
+      "score": "74/80",
+      "certUrl": "https://www.jcmaxwell.it/cypherpunk2140",
+      "txid": "0203793396bbed6546055fb01f1e0e15d39268cb8f06d66c8ce058d0a27604ed",
+      "hash": "D8B2CBE9 FC4CD664 3D8F66D0 DB5AF87C 94C07A67 210FFE21 4C00AE98 A6B6C93F",
+      "signedText": "Istituto di Istruzione Superiore J. C. Maxwell\nVia XXV Aprile 141, Nichelino (TO)\n\nCorso \"Cypherpunk 2140\"\n~ Proof of Knowledge ~\nhttps://www.jcmaxwell.it/cypherpunk2140\n\nSi certifica che lo studente\n\nDaniele Porcaro, classe 3A INFO\n\nin data 09/05/2025 ha superato l'esame di certificazione\ndel corso \"Cypherpunk2140\" con un punteggio di 74/80.\nQuesto certificato è emesso e firmato dal Prof. Marco Farina.\n\nNichelino, 17/05/2025",
+      "gpgFingerprint": "44021BD1F34AE97188 9CF873C03EE33A2FFE9173",
+      "file": "cypherpunk2140.pdf"
+    },
+    {
+      "date": "Maggio 2026",
+      "date_en": "May 2026",
+      "name": "Cambridge English C1 Advanced",
+      "logo": "/assets/logos/cambridge.svg",
+      "issuer": {
+        "it": "Cambridge University Press & Assessment",
+        "en": "Cambridge University Press & Assessment"
+      },
+      "verifiable": false
+    },
+    {
+      "date": "2022",
+      "name": "Cambridge English B1 Preliminary",
+      "logo": "/assets/logos/cambridge.svg",
+      "issuer": {
+        "it": "Cambridge University Press & Assessment",
+        "en": "Cambridge University Press & Assessment"
+      },
+      "verifiable": false
+    },
+    {
+      "date": "2024",
+      "name": "CISCO – Introduction to Networks",
+      "logo": "/assets/logos/cisco.svg",
+      "issuer": {
+        "it": "Cisco Networking Academy",
+        "en": "Cisco Networking Academy"
+      },
+      "verifiable": false
+    },
+    {
+      "date": "2024",
+      "name": "Patentino Robotica Industriale",
+      "name_en": "Industrial Robotics Certificate",
+      "logo": "/assets/logos/comau.svg",
+      "issuer": {
+        "it": "Comau S.p.A.",
+        "en": "Comau S.p.A."
+      },
+      "verifiable": false
+    }
+  ],
+  "competitions": [
+    {
+      "name": {
+        "it": "GNI 2026 – Gara Nazionale di Informatica",
+        "en": "GNI 2026 – National Computer Science Competition"
+      },
+      "role": {
+        "it": "Rappresentante d'istituto",
+        "en": "Institute representative"
+      },
+      "note": {
+        "it": "Un solo studente selezionato per istituto a livello nazionale",
+        "en": "Only one student selected per institute nationwide"
+      }
+    }
+  ],
+  "downloadableCerts": [
+    {
+      "name": "Cypherpunk 2140 – Proof of Knowledge",
+      "description": {
+        "it": "Certificato esame blockchain, punteggio 74/80",
+        "en": "Blockchain exam certificate, score 74/80"
+      },
+      "file": "cypherpunk2140.pdf",
+      "icon": "₿"
+    },
+    {
+      "name": "Patentino Robotica Industriale – Comau",
+      "description": {
+        "it": "Certificazione robotica industriale PDL2",
+        "en": "Industrial robotics certification PDL2"
+      },
+      "file": "Professional_Certification_1747739235.pdf",
+      "icon": "🤖"
+    },
+    {
+      "name": "CISCO – Introduction to Networks (ITN)",
+      "description": {
+        "it": "Cisco Networking Academy – CCNA ITN",
+        "en": "Cisco Networking Academy – CCNA ITN"
+      },
+      "file": "CCNAITNUpdated20260520-32-7e2bcy.pdf",
+      "icon": "🌐"
+    }
+  ]
+}

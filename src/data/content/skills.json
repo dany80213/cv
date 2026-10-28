@@ -1,0 +1,102 @@
+{
+  "skills": {
+    "languages": [
+      {
+        "name": "Python",
+        "level": 85
+      },
+      {
+        "name": "JavaScript",
+        "level": 80
+      },
+      {
+        "name": "PHP",
+        "level": 65
+      },
+      {
+        "name": "SQL",
+        "level": 70
+      },
+      {
+        "name": "HTML/CSS",
+        "level": 85
+      },
+      {
+        "name": "TypeScript",
+        "level": 65
+      },
+      {
+        "name": "PDL2 (Comau)",
+        "level": 60
+      }
+    ],
+    "frameworks": [
+      "React",
+      "Vue.js",
+      "Next.js",
+      "Express",
+      "FastAPI"
+    ],
+    "databases": [
+      "PostgreSQL",
+      "MySQL",
+      "Prisma ORM"
+    ],
+    "devops": [
+      "Git",
+      "Docker",
+      "Caddy",
+      "VS Code"
+    ],
+    "networking": [
+      "TCP/IP",
+      "Subnetting",
+      "Routing & Switching",
+      "MQTT",
+      "UART",
+      "Tasmota"
+    ],
+    "hardware": [
+      "Arduino",
+      "Raspberry Pi 5",
+      "ESP32",
+      "RF 433 MHz"
+    ],
+    "blockchain": [
+      "Bitcoin",
+      "OpenTimestamps",
+      "GPG / PGP"
+    ],
+    "ai": [
+      "Claude (Anthropic)",
+      "Gemini (Google)",
+      "ChatGPT (OpenAI)"
+    ]
+  },
+  "languages": [
+    {
+      "lang": "Italiano",
+      "level": {
+        "it": "Madrelingua",
+        "en": "Native"
+      },
+      "code": "C2"
+    },
+    {
+      "lang": "English",
+      "level": {
+        "it": "Avanzato (C1)",
+        "en": "Advanced (C1)"
+      },
+      "code": "C1"
+    },
+    {
+      "lang": "Español",
+      "level": {
+        "it": "Elementare",
+        "en": "Elementary"
+      },
+      "code": "A2"
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "name": "Daniele Porcaro",
+  "age": 18,
+  "projectsCount": "12+",
+  "location": "Torino, IT",
+  "email": "danielepto2@gmail.com",
+  "github": "dany80213",
+  "githubUrl": "https://github.com/dany80213",
+  "roles": {
+    "it": "Studente di Informatica",
+    "en": "Computer Science Student"
+  },
+  "tagline": {
+    "it": "Appassionato di sviluppo web, hardware, networking e Bitcoin.",
+    "en": "Passionate about web development, hardware, networking and Bitcoin."
+  },
+  "about": {
+    "it": "Sono Daniele, 18 anni, studente al 4° anno di Informatica all'IIS J.C. Maxwell di Nichelino. Mi occupo di sviluppo web full-stack, self-hosting, robotica e sistemi embedded. Investo in Bitcoin, lavoro spesso con GPG/PGP e mi piace costruire progetti che usino hardware e software insieme.",
+    "en": "I'm Daniele, 18, a 4th-year Computer Science student at IIS J.C. Maxwell in Nichelino (Torino). I work in full-stack web development, self-hosting, robotics and embedded systems. I invest in Bitcoin, work with GPG/PGP and enjoy building projects that blend hardware and software."
+  },
+  "softSkills": {
+    "it": [
+      "Problem solving",
+      "Autonomia",
+      "Lavoro in team",
+      "Curiosità"
+    ],
+    "en": [
+      "Problem solving",
+      "Autonomy",
+      "Team work",
+      "Curiosity"
+    ]
+  },
+  "hobbies": {
+    "it": [
+      "Trading crypto & Bitcoin",
+      "Self-hosting & homelab",
+      "Hardware tinkering",
+      "Palestra"
+    ],
+    "en": [
+      "Crypto & Bitcoin trading",
+      "Self-hosting & homelab",
+      "Hardware tinkering",
+      "Gym"
+    ]
+  },
+  "pcto": {
+    "hours": 520,
+    "it": "PCTO svolto presso IIS J.C. Maxwell",
+    "en": "Work-based learning (PCTO) at IIS J.C. Maxwell"
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "education": [
+    {
+      "school": "IIS J.C. Maxwell",
+      "location": "Nichelino (TO)",
+      "degree": {
+        "it": "Diploma – Informatica e Telecomunicazioni",
+        "en": "High School Diploma – Computer Science & Telecommunications"
+      },
+      "period": "2021 – 2027",
+      "current": true,
+      "highlights": {
+        "it": [
+          "Voto 10 in Sistemi e Reti",
+          "Voto 10 in TPSIT",
+          "Voto 10 in Informatica"
+        ],
+        "en": [
+          "Grade 10/10 in Networks & Systems",
+          "Grade 10/10 in TPSIT",
+          "Grade 10/10 in Computer Science"
+        ]
+      }
+    },
+    {
+      "school": "Politecnico di Torino",
+      "location": "Torino",
+      "degree": {
+        "it": "Ingegneria Informatica (prevista)",
+        "en": "Computer Engineering (planned)"
+      },
+      "period": "2027 →",
+      "current": false,
+      "highlights": {
+        "it": [],
+        "en": []
+      }
+    }
+  ]
+}
