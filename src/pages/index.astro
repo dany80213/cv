@@ -424,7 +424,8 @@ import { cv } from '../data/cv.ts';
   <footer style="border-top:1px solid var(--border); padding:1.5rem 2rem; text-align:center;">
     <p style="font-size:0.75rem; color:var(--text-muted);">
       <span data-i18n="footer.built">Costruito con</span> Astro + Tailwind ·
-      <span style="color:var(--accent)">Daniele Porcaro</span> · 2026
+      <span style="color:var(--accent)">Daniele Porcaro</span> · 2026 ·
+      <a id="privacy-link" href="/cv/privacy/" style="color:inherit;" data-i18n="footer.privacy">Privacy &amp; licenze</a>
     </p>
   </footer>
 
@@ -459,7 +460,7 @@ import { cv } from '../data/cv.ts';
         'cert.verify':'₿ Verify on-chain','cert.txid':'TxID Bitcoin:','cert.hash':'Hash certificato:',
         'cert.verify-note':'Certificato verificabile tramite OpenTimestamps (.ots) e firma GPG (.asc)',
         'contact.text':'Sono sempre aperto a nuove opportunità, collaborazioni o semplicemente a fare due chiacchiere di tech.',
-        'footer.built':'Costruito con','projects.more':'+ Altri progetti',
+        'footer.built':'Costruito con','footer.privacy':'Privacy & licenze','projects.more':'+ Altri progetti',
         'certs.download':'Scarica certificati',
       },
       en: {
@@ -473,7 +474,7 @@ import { cv } from '../data/cv.ts';
         'cert.verify':'₿ Verify on-chain','cert.txid':'Bitcoin TxID:','cert.hash':'Certificate hash:',
         'cert.verify-note':'Certificate verifiable via OpenTimestamps (.ots) and GPG signature (.asc)',
         'contact.text':"I'm always open to new opportunities, collaborations, or just talking tech.",
-        'footer.built':'Built with','projects.more':'+ More projects',
+        'footer.built':'Built with','footer.privacy':'Privacy & licenses','projects.more':'+ More projects',
         'certs.download':'Download certificates',
       }
     };
@@ -497,6 +498,7 @@ import { cv } from '../data/cv.ts';
       document.querySelectorAll('#skills .card:last-of-type .badge').forEach((b, i) => {
         if (softSkills[i]) b.textContent = softSkills[i];
       });
+      document.getElementById('privacy-link').href = '/cv/privacy/?lang=' + l;
       document.getElementById('lang-toggle').textContent = l === 'it' ? 'EN' : 'IT';
     }
 
