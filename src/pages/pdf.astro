@@ -1,5 +1,6 @@
 ---
 import { cv } from '../data/cv.ts';
+import { icon } from '../lib/icons.ts';
 import '@fontsource/jetbrains-mono/latin-300.css';
 import '@fontsource/jetbrains-mono/latin-400.css';
 import '@fontsource/jetbrains-mono/latin-600.css';
@@ -128,7 +129,8 @@ import '@fontsource/jetbrains-mono/latin-700.css';
       font-size: 9.5px; color: var(--muted);
       padding-left: 10px; position: relative; margin-bottom: 1px;
     }
-    .highlights li::before { content: '▸'; position: absolute; left: 0; color: var(--accent); font-size: 8px; top: 1px; }
+    .highlights li::before { content: ''; position: absolute; left: 1px; top: 4px; border-left: 5px solid var(--accent); border-top: 3px solid transparent; border-bottom: 3px solid transparent; }
+    .ico { width: 1em; height: 1em; flex: none; vertical-align: -0.125em; }
 
     /* ── skill bars ── */
     .skill-row { display: flex; align-items: center; gap: 7px; margin-bottom: 7px; }
@@ -203,7 +205,7 @@ import '@fontsource/jetbrains-mono/latin-700.css';
 
   <div class="print-bar">
     <span class="logo">~/daniele.porcaro</span>
-    <button onclick="window.print()">↓ Salva come PDF &nbsp;(Ctrl+P)</button>
+    <button onclick="window.print()"><Fragment set:html={icon('download')} /> Salva come PDF &nbsp;(Ctrl+P)</button>
   </div>
 
   <div class="page">
@@ -317,7 +319,7 @@ import '@fontsource/jetbrains-mono/latin-700.css';
             <div class="item">
               <div class="item-row">
                 <span class="item-name">{typeof p.name === 'string' ? p.name : p.name.it}</span>
-                {p.url && <a href={p.url} style="font-size:9px; color:var(--accent-dark); text-decoration:none; font-weight:600;">↗ GitHub</a>}
+                {p.url && <a href={p.url} style="font-size:9px; color:var(--accent-dark); text-decoration:none; font-weight:600;"><Fragment set:html={icon('github')} /> GitHub</a>}
               </div>
               <div class="item-desc">{typeof p.description === 'object' ? p.description.it : p.description}</div>
               <div class="tags">{p.tech.map(t => <span class="tag">{t}</span>)}</div>
@@ -332,7 +334,7 @@ import '@fontsource/jetbrains-mono/latin-700.css';
           <div class="section-title">Certificazioni & Competizioni</div>
 
           <div class="competition">
-            <div class="badge">🏆 COMPETIZIONE NAZIONALE</div>
+            <div class="badge"><Fragment set:html={icon('trophy')} /> COMPETIZIONE NAZIONALE</div>
             <div class="item-row">
               <span class="item-name">{cv.competitions[0].name.it}</span>
               <span class="item-date">2026</span>
@@ -353,7 +355,7 @@ import '@fontsource/jetbrains-mono/latin-700.css';
               <div class="item-sub">{typeof c.issuer === 'object' ? c.issuer.it : c.issuer}</div>
               {c.verifiable && (
                 <div class="btc-box">
-                  <div class="btc-label">₿ Verificabile on-chain · TxID</div>
+                  <div class="btc-label"><Fragment set:html={icon('bitcoin')} /> Verificabile on-chain · TxID</div>
                   <code>{cv.certifications[0].txid}</code>
                 </div>
               )}

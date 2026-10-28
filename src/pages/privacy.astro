@@ -1,13 +1,14 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import { cv } from '../data/cv.ts';
+import { icon } from '../lib/icons.ts';
 
 const updated = { it: '28 ottobre 2026', en: 'October 28, 2026' };
 
 const content = {
   it: {
     title: 'Privacy e licenze',
-    back: '← Torna al CV',
+    back: 'Torna al CV',
     updated: 'Ultimo aggiornamento',
     sections: [
       {
@@ -47,7 +48,7 @@ const content = {
           '<strong>Codice del sito</strong> (template Astro/Tailwind, componenti, script): licenza MIT, © 2026 Daniele Porcaro. Puoi riusarlo liberamente mantenendo l\'avviso di copyright. Testo completo in <a href="https://github.com/dany80213/cv/blob/main/LICENSE" rel="noopener">LICENSE</a>.',
           '<strong>Contenuti personali</strong> (testi, descrizioni, foto, dati biografici, PDF del CV): tutti i diritti riservati. Se riusi il template, sostituisci questi contenuti con i tuoi.',
           '<strong>Certificati e attestati</strong> in <code>public/certs</code>: documenti emessi da terzi e riferiti a me, non sono coperti dalla licenza MIT e non possono essere riutilizzati.',
-          '<strong>Loghi e marchi</strong> (Cisco, Comau, Cambridge, Bitcoin): appartengono ai rispettivi proprietari e sono usati solo per indicare certificazioni e competenze. Non implicano alcun accordo o sponsorizzazione.',
+          '<strong>Loghi e marchi</strong> (Cisco, Comau, Cambridge, Bitcoin, GitHub): appartengono ai rispettivi proprietari e sono usati solo per indicare certificazioni e competenze. Non implicano alcun accordo o sponsorizzazione.',
         ],
       },
       {
@@ -57,6 +58,7 @@ const content = {
           '<a href="https://tailwindcss.com" rel="noopener">Tailwind CSS</a>: MIT',
           '<a href="https://fontsource.org/fonts/jetbrains-mono" rel="noopener">JetBrains Mono</a> (via Fontsource): SIL Open Font License 1.1, © The JetBrains Mono Project Authors',
           '<a href="https://pptr.dev" rel="noopener">Puppeteer</a> (solo in sviluppo, per generare il PDF): Apache-2.0',
+          '<a href="https://lucide.dev" rel="noopener">Lucide</a> (icone): ISC. <a href="https://simpleicons.org" rel="noopener">Simple Icons</a> (loghi GitHub e Bitcoin): CC0 1.0',
         ],
       },
       {
@@ -67,7 +69,7 @@ const content = {
   },
   en: {
     title: 'Privacy and licenses',
-    back: '← Back to CV',
+    back: 'Back to CV',
     updated: 'Last updated',
     sections: [
       {
@@ -107,7 +109,7 @@ const content = {
           '<strong>Site code</strong> (Astro/Tailwind template, components, scripts): MIT license, © 2026 Daniele Porcaro. You may reuse it freely as long as you keep the copyright notice. Full text in <a href="https://github.com/dany80213/cv/blob/main/LICENSE" rel="noopener">LICENSE</a>.',
           '<strong>Personal content</strong> (texts, descriptions, photos, biographical data, CV PDF): all rights reserved. If you reuse the template, replace this content with your own.',
           '<strong>Certificates and attestations</strong> in <code>public/certs</code>: documents issued by third parties and referring to me. They are not covered by the MIT license and may not be reused.',
-          '<strong>Logos and trademarks</strong> (Cisco, Comau, Cambridge, Bitcoin): belong to their respective owners and are used only to indicate certifications and skills. They imply no agreement or endorsement.',
+          '<strong>Logos and trademarks</strong> (Cisco, Comau, Cambridge, Bitcoin, GitHub): belong to their respective owners and are used only to indicate certifications and skills. They imply no agreement or endorsement.',
         ],
       },
       {
@@ -117,6 +119,7 @@ const content = {
           '<a href="https://tailwindcss.com" rel="noopener">Tailwind CSS</a>: MIT',
           '<a href="https://fontsource.org/fonts/jetbrains-mono" rel="noopener">JetBrains Mono</a> (via Fontsource): SIL Open Font License 1.1, © The JetBrains Mono Project Authors',
           '<a href="https://pptr.dev" rel="noopener">Puppeteer</a> (development only, used to generate the PDF): Apache-2.0',
+          '<a href="https://lucide.dev" rel="noopener">Lucide</a> (icons): ISC. <a href="https://simpleicons.org" rel="noopener">Simple Icons</a> (GitHub and Bitcoin logos): CC0 1.0',
         ],
       },
       {
@@ -130,7 +133,7 @@ const content = {
 <Layout title="Privacy & licenze – Daniele Porcaro">
   <main style="max-width:760px; margin:0 auto; padding:3rem 1.5rem 4rem;">
     <nav style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2.5rem;">
-      <a id="back-link" href="/" class="nav-link" style="color:var(--text-dim); text-decoration:none; font-size:0.85rem;"></a>
+      <a id="back-link" href="/" class="nav-link" style="color:var(--text-dim); text-decoration:none; font-size:0.85rem; display:inline-flex; align-items:center; gap:0.4rem;"></a>
       <button id="lang-toggle" class="btn btn-outline" style="padding:0.3rem 0.8rem; font-size:0.75rem;">EN</button>
     </nav>
 
@@ -158,11 +161,11 @@ const content = {
     .legal strong { color: var(--text); }
   </style>
 
-  <script define:vars={{ backLabels: { it: content.it.back, en: content.en.back } }}>
+  <script define:vars={{ backLabels: { it: content.it.back, en: content.en.back }, backIcon: icon('arrow-left') }}>
     function setLang(l) {
       document.documentElement.lang = l;
       document.querySelectorAll('article[data-lang]').forEach(a => { a.hidden = a.dataset.lang !== l; });
-      document.getElementById('back-link').textContent = backLabels[l];
+      document.getElementById('back-link').innerHTML = backIcon + ' ' + backLabels[l];
       document.getElementById('back-link').href = '/';
       document.getElementById('lang-toggle').textContent = l === 'it' ? 'EN' : 'IT';
       document.getElementById('lang-toggle').dataset.lang = l;
