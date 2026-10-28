@@ -40,7 +40,7 @@ async function run() {
   });
 
   const page = await browser.newPage();
-  await page.goto(`http://localhost:${PORT}/cv/pdf`, { waitUntil: 'networkidle0', timeout: 30000 });
+  await page.goto(`http://localhost:${PORT}/pdf`, { waitUntil: 'networkidle0', timeout: 30000 });
 
   // Wait for fonts
   await page.evaluateHandle('document.fonts.ready');
