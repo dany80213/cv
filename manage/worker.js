@@ -1,217 +1,56 @@
-// manage.retenasa.dev — Sveltia CMS shell + GitHub OAuth for the CV repo.
+// manage.retenasa.dev — GitHub OAuth for the CV repo + static delivery of the admin page.
+// The page itself lives in manage/ui/ and is served straight from the repo, so changing it
+// never needs a Worker redeploy.
+//
 // Secrets/vars (set in Cloudflare, never in this repo):
 //   GITHUB_CLIENT_ID      (var)    OAuth App client id
 //   GITHUB_CLIENT_SECRET  (secret) OAuth App client secret
 //   ALLOWED_USER          (var)    the only GitHub login allowed to sign in
 
 const ORIGIN = 'https://manage.retenasa.dev';
-const REPO = 'dany80213/cv';
-const CMS_URL = 'https://cdn.jsdelivr.net/npm/@sveltia/cms@0.237.0/dist/sveltia-cms.js';
+const UI_BASE = 'https://raw.githubusercontent.com/dany80213/cv/main/manage/ui/';
 
-// ---------- CMS configuration (served as JSON, which is valid YAML) ----------
-const str = (name, label, extra = {}) => ({ name, label, widget: 'string', ...extra });
-const opt = (f) => ({ ...f, required: false });
-const long = (name, label, extra = {}) => ({ name, label, widget: 'text', ...extra });
-const bool = (name, label, def = false) => ({ name, label, widget: 'boolean', default: def, required: false });
-const pair = (name, label, widget = 'string', extra = {}) => ({
-  name, label, widget: 'object', collapsed: false, ...extra,
-  fields: [
-    { name: 'it', label: 'Italiano', widget, ...(extra.req === false ? { required: false } : {}) },
-    { name: 'en', label: 'English', widget, ...(extra.req === false ? { required: false } : {}) },
-  ],
-});
-const list = (name, label, field) => ({ name, label, widget: 'list', field });
-const strList = (name, label) => ({ ...list(name, label, str('item', 'Voce')), required: false });
-const pairList = (name, label) => ({
-  name, label, widget: 'object', collapsed: true,
-  fields: [
-    { ...strList('it', 'Italiano') },
-    { ...strList('en', 'English') },
-  ],
-});
-const fileField = (name, label, folder, publicFolder) => ({
-  name, label, widget: 'file', required: false,
-  media_folder: folder, public_folder: publicFolder,
-});
-
-const config = {
-  backend: {
-    name: 'github',
-    repo: REPO,
-    branch: 'main',
-    base_url: ORIGIN,
-    auth_endpoint: 'auth',
-    commit_messages: {
-      create: 'content: add {{collection}} "{{slug}}"',
-      update: 'content: update {{collection}} "{{slug}}"',
-      delete: 'content: delete {{collection}} "{{slug}}"',
-      uploadMedia: 'content: upload "{{path}}"',
-      deleteMedia: 'content: delete "{{path}}"',
-    },
-  },
-  publish_mode: 'simple',
-  media_folder: 'public/certs',
-  public_folder: '/certs',
-  site_url: 'https://cv.retenasa.dev',
-  display_url: 'https://cv.retenasa.dev',
-  collections: [
-    {
-      name: 'site',
-      label: 'CV',
-      files: [
-        {
-          name: 'profile', label: 'Profilo e contatti', file: 'src/data/content/profile.json',
-          fields: [
-            str('name', 'Nome'),
-            { name: 'age', label: 'Età', widget: 'number', value_type: 'int' },
-            str('projectsCount', 'Numero progetti (es. 12+)'),
-            str('location', 'Città'),
-            str('email', 'Email di contatto'),
-            str('github', 'Username GitHub'),
-            str('githubUrl', 'URL GitHub'),
-            pair('roles', 'Ruolo'),
-            pair('tagline', 'Tagline'),
-            pair('about', 'Chi sono', 'text'),
-            pairList('softSkills', 'Soft skills'),
-            pairList('hobbies', 'Hobby'),
-            {
-              name: 'pcto', label: 'PCTO', widget: 'object',
-              fields: [{ name: 'hours', label: 'Ore', widget: 'number', value_type: 'int' }, str('it', 'Italiano'), str('en', 'English')],
-            },
-          ],
-        },
-        {
-          name: 'education', label: 'Formazione', file: 'src/data/content/education.json',
-          fields: [{
-            name: 'education', label: 'Percorsi', widget: 'list', summary: '{{fields.school}}',
-            fields: [
-              str('school', 'Scuola / università'),
-              str('location', 'Luogo'),
-              pair('degree', 'Titolo'),
-              str('period', 'Periodo'),
-              bool('current', 'In corso'),
-              pairList('highlights', 'Punti salienti'),
-            ],
-          }],
-        },
-        {
-          name: 'certifications', label: 'Certificazioni e competizioni', file: 'src/data/content/certifications.json',
-          fields: [
-            {
-              name: 'certifications', label: 'Certificazioni', widget: 'list', summary: '{{fields.name}}',
-              fields: [
-                str('name', 'Nome (italiano)'),
-                opt(str('name_en', 'Nome (inglese, se diverso)')),
-                fileField('logo', 'Logo', '/public/assets/logos', '/assets/logos'),
-                pair('issuer', 'Ente'),
-                str('date', 'Data (italiano)'),
-                opt(str('date_en', 'Data (inglese, se diversa)')),
-                bool('verifiable', 'Verificabile on-chain'),
-                opt(str('score', 'Punteggio')),
-                opt(str('certUrl', 'Link al corso/certificato')),
-                opt(str('txid', 'TxID Bitcoin')),
-                opt(str('hash', 'Hash certificato')),
-                opt(long('signedText', 'Testo firmato')),
-                opt(str('gpgFingerprint', 'Fingerprint GPG')),
-                fileField('file', 'PDF del certificato', '/public/certs', '/certs'),
-              ],
-            },
-            {
-              name: 'competitions', label: 'Competizioni', widget: 'list', summary: '{{fields.name.it}}',
-              fields: [pair('name', 'Nome'), pair('role', 'Ruolo'), pair('note', 'Nota')],
-            },
-            {
-              name: 'downloadableCerts', label: 'Certificati scaricabili', widget: 'list', summary: '{{fields.name}}',
-              fields: [
-                str('name', 'Nome'),
-                pair('description', 'Descrizione'),
-                fileField('file', 'File PDF', '/public/certs', '/certs'),
-                {
-                  name: 'icon', label: 'Icona', widget: 'select', default: 'award',
-                  options: [
-                    { label: 'Bitcoin', value: 'bitcoin' },
-                    { label: 'Robotica', value: 'bot' },
-                    { label: 'Rete / web', value: 'globe' },
-                    { label: 'Premio', value: 'award' },
-                    { label: 'Sicurezza', value: 'shield-check' },
-                    { label: 'Laurea / studio', value: 'graduation-cap' },
-                    { label: 'Documento', value: 'file-text' },
-                  ],
-                },
-              ],
-            },
-          ],
-        },
-        {
-          name: 'projects', label: 'Progetti', file: 'src/data/content/projects.json',
-          fields: [{
-            name: 'projects', label: 'Progetti', widget: 'list', summary: '{{fields.name}}',
-            fields: [
-              str('name', 'Nome (italiano)'),
-              opt(str('name_en', 'Nome (inglese, se diverso)')),
-              pair('description', 'Descrizione', 'text'),
-              { ...list('tech', 'Tecnologie', str('item', 'Tecnologia')) },
-              opt(str('url', 'Link (GitHub o sito)')),
-              bool('featured', 'In evidenza'),
-            ],
-          }],
-        },
-        {
-          name: 'skills', label: 'Competenze e lingue', file: 'src/data/content/skills.json',
-          fields: [
-            {
-              name: 'skills', label: 'Competenze', widget: 'object',
-              fields: [
-                {
-                  name: 'languages', label: 'Linguaggi (con livello)', widget: 'list', summary: '{{fields.name}} {{fields.level}}%',
-                  fields: [str('name', 'Nome'), { name: 'level', label: 'Livello (0-100)', widget: 'number', value_type: 'int', min: 0, max: 100 }],
-                },
-                strList('frameworks', 'Framework'),
-                strList('databases', 'Database'),
-                strList('devops', 'DevOps'),
-                strList('networking', 'Networking'),
-                strList('hardware', 'Hardware'),
-                strList('blockchain', 'Blockchain'),
-                strList('ai', 'AI'),
-              ],
-            },
-            {
-              name: 'languages', label: 'Lingue parlate', widget: 'list', summary: '{{fields.lang}}',
-              fields: [str('lang', 'Lingua'), pair('level', 'Livello'), str('code', 'Codice (es. C1)')],
-            },
-          ],
-        },
-      ],
-    },
-  ],
+// Only these files can be served; anything else under /admin/ is a 404.
+const FILES = {
+  'index.html': 'text/html; charset=utf-8',
+  'app.js': 'text/javascript; charset=utf-8',
+  'schema.js': 'text/javascript; charset=utf-8',
+  'github.js': 'text/javascript; charset=utf-8',
+  'icons.js': 'text/javascript; charset=utf-8',
+  'app.css': 'text/css; charset=utf-8',
 };
 
-const ADMIN_HTML = `<!doctype html>
-<html lang="it"><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="robots" content="noindex,nofollow">
-<title>Gestione CV</title>
-<link rel="cms-config-url" type="text/yaml" href="/admin/config.yml">
-</head><body><script src="${CMS_URL}"></script></body></html>`;
+// The page holds a GitHub token, so it may only load its own code and talk to the GitHub API.
+const PAGE_CSP = [
+  "default-src 'none'",
+  "script-src 'self'",
+  "style-src 'self'",
+  'font-src https://cv.retenasa.dev',
+  "img-src 'self' data: https://cv.retenasa.dev",
+  'connect-src https://api.github.com',
+  "base-uri 'none'",
+  "form-action 'none'",
+  "frame-ancestors 'none'",
+].join('; ');
 
-// ---------- helpers ----------
 const SEC = {
   'x-content-type-options': 'nosniff',
   'x-frame-options': 'DENY',
   'referrer-policy': 'no-referrer',
   'cache-control': 'no-store',
 };
-const html = (body, status = 200, extra = {}) =>
-  new Response(body, { status, headers: { 'content-type': 'text/html; charset=utf-8', ...SEC, ...extra } });
 
-const cookie = (name) => (req) =>
+const text = (body, status = 200, type = 'text/plain; charset=utf-8', extra = {}) =>
+  new Response(body, { status, headers: { 'content-type': type, ...SEC, ...extra } });
+
+const readCookie = (req, name) =>
   (req.headers.get('cookie') || '').split(/;\s*/).find((c) => c.startsWith(name + '='))?.slice(name.length + 1);
-const stateCookie = cookie('oauth_state');
 
+// Standard Decap/Sveltia-style popup handshake. The message is only ever sent to our own origin.
 function resultPage(status, payload) {
-  // Standard Decap/Sveltia popup handshake; message is only sent to our own origin.
+  const nonce = btoa(String.fromCharCode(...crypto.getRandomValues(new Uint8Array(16))));
   const msg = `authorization:github:${status}:${JSON.stringify(payload)}`;
-  return html(`<!doctype html><meta charset="utf-8"><title>Login</title><body><script>
+  const body = `<!doctype html><meta charset="utf-8"><title>Login</title><body><script nonce="${nonce}">
 (function () {
   function receive(e) {
     if (e.origin !== ${JSON.stringify(ORIGIN)}) return;
@@ -222,20 +61,36 @@ function resultPage(status, payload) {
   window.addEventListener('message', receive, false);
   window.opener.postMessage('authorizing:github', ${JSON.stringify(ORIGIN)});
 })();
-</script></body>`, 200, { 'set-cookie': 'oauth_state=; Path=/; Max-Age=0; Secure; HttpOnly; SameSite=Lax' });
+</script></body>`;
+  return text(body, 200, 'text/html; charset=utf-8', {
+    'content-security-policy': `default-src 'none'; script-src 'nonce-${nonce}'; frame-ancestors 'none'`,
+    'set-cookie': 'oauth_state=; Path=/; Max-Age=0; Secure; HttpOnly; SameSite=Lax',
+  });
 }
 
-// ---------- routes ----------
+async function serveUi(file) {
+  const upstream = await fetch(UI_BASE + file, { cf: { cacheTtl: 60, cacheEverything: true } });
+  if (!upstream.ok) return text('Admin page unavailable', 502);
+  return new Response(upstream.body, {
+    headers: { 'content-type': FILES[file], 'content-security-policy': PAGE_CSP, ...SEC },
+  });
+}
+
 export default {
   async fetch(req, env) {
     const url = new URL(req.url);
+    const path = url.pathname;
 
-    if (url.pathname === '/' ) return Response.redirect(`${ORIGIN}/admin/`, 302);
-    if (url.pathname === '/admin' || url.pathname === '/admin/') return html(ADMIN_HTML);
-    if (url.pathname === '/admin/config.yml')
-      return new Response(JSON.stringify(config), { headers: { 'content-type': 'text/yaml; charset=utf-8', ...SEC } });
+    if (path === '/') return Response.redirect(`${ORIGIN}/admin/`, 302);
 
-    if (url.pathname === '/auth') {
+    if (path === '/admin' || path === '/admin/') return serveUi('index.html');
+    if (path.startsWith('/admin/')) {
+      const file = path.slice('/admin/'.length);
+      return Object.hasOwn(FILES, file) ? serveUi(file) : text('Not found', 404);
+    }
+
+    if (path === '/auth') {
+      if (!env.GITHUB_CLIENT_ID) return text('Not configured', 500);
       const state = crypto.randomUUID();
       const gh = new URL('https://github.com/login/oauth/authorize');
       gh.searchParams.set('client_id', env.GITHUB_CLIENT_ID);
@@ -252,10 +107,10 @@ export default {
       });
     }
 
-    if (url.pathname === '/callback') {
+    if (path === '/callback') {
       const code = url.searchParams.get('code');
       const state = url.searchParams.get('state');
-      if (!code || !state || state !== stateCookie(req)) return resultPage('error', { error: 'invalid_state' });
+      if (!code || !state || state !== readCookie(req, 'oauth_state')) return resultPage('error', { error: 'invalid_state' });
 
       const tokenRes = await fetch('https://github.com/login/oauth/access_token', {
         method: 'POST',
@@ -274,12 +129,11 @@ export default {
       const me = await fetch('https://api.github.com/user', {
         headers: { authorization: `Bearer ${token}`, accept: 'application/vnd.github+json', 'user-agent': 'cv-manage' },
       }).then((r) => r.json());
-      if (!me.login || me.login.toLowerCase() !== env.ALLOWED_USER.toLowerCase())
-        return resultPage('error', { error: 'user_not_allowed' });
+      if (!me.login || me.login.toLowerCase() !== env.ALLOWED_USER.toLowerCase()) return resultPage('error', { error: 'user_not_allowed' });
 
       return resultPage('success', { token, provider: 'github' });
     }
 
-    return new Response('Not found', { status: 404, headers: SEC });
+    return text('Not found', 404);
   },
 };
