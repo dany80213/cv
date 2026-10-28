@@ -1,6 +1,16 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <rect width="64" height="64" rx="14" fill="#0a0a0f"/>
-  <rect x="1" y="1" width="62" height="62" rx="13" fill="none" stroke="#1e1e2e" stroke-width="2"/>
-  <path d="M16 21l14 11-14 11" fill="none" stroke="#00ff88" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M36 45h12" fill="none" stroke="#00ff88" stroke-width="6" stroke-linecap="round"/>
+  <style>
+    .bg { fill: #0a0a0f; }
+    .ring { stroke: #1e1e2e; }
+    .fg { stroke: #00ff88; }
+    @media (prefers-color-scheme: light) {
+      .bg { fill: #f8fafc; }
+      .ring { stroke: #cbd5e1; }
+      .fg { stroke: #0066cc; }
+    }
+  </style>
+  <rect class="bg" width="64" height="64" rx="14"/>
+  <rect class="ring" x="1" y="1" width="62" height="62" rx="13" fill="none" stroke-width="2"/>
+  <path class="fg" d="M16 21l14 11-14 11" fill="none" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+  <path class="fg" d="M36 45h12" fill="none" stroke-width="6" stroke-linecap="round"/>
 </svg>

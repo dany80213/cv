@@ -506,10 +506,21 @@ import { icon, iconSet } from '../lib/icons.ts';
       applyLang(lang.current === 'it' ? 'en' : 'it');
     });
 
+    // The favicon follows the browser theme by default (see favicon.svg); once the visitor uses the
+    // toggle it follows the site theme instead.
+    function setFavicon(t) {
+      const link = document.createElement('link');
+      link.rel = 'icon';
+      link.type = 'image/svg+xml';
+      link.href = `/favicon-${t}.svg`;
+      document.querySelector('link[rel="icon"][type="image/svg+xml"]')?.replaceWith(link);
+    }
+
     let theme = 'dark';
     document.getElementById('theme-toggle').addEventListener('click', () => {
       theme = theme === 'dark' ? 'light' : 'dark';
       document.documentElement.setAttribute('data-theme', theme);
+      setFavicon(theme);
       document.getElementById('theme-icon').innerHTML = theme === 'dark' ? ic['sun'].replace('1em', '1.2rem').replace('1em', '1.2rem') : ic['moon'].replace('1em', '1.2rem').replace('1em', '1.2rem');
     });
 
