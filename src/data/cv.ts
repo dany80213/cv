@@ -47,6 +47,8 @@ export interface GithubSnapshot {
   homepage: string | null;
   defaultBranch: string;
   archived: boolean;
+  /** Private repos keep their snapshot, but the pages do not link to them (the link would 404). */
+  private: boolean;
   createdAt: string;
   pushedAt: string;
   readme: string | null;

@@ -1,6 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import { cv } from '../data/cv.ts';
+import { cv, github } from '../data/cv.ts';
 import { icon, iconSet } from '../lib/icons.ts';
 ---
 <Layout>
@@ -113,7 +113,7 @@ import { icon, iconSet } from '../lib/icons.ts';
               <a class="btn btn-ghost" href={`/progetti/${p.slug}/`} data-href={`/progetti/${p.slug}/`} style="padding:0.25rem 0.7rem; font-size:0.72rem;">
                 <span data-i18n="proj.details">Dettagli</span> <Fragment set:html={icon('arrow-right')} />
               </a>
-              {p.url && (
+              {p.url && !github[p.slug]?.private && (
                 <a href={p.url} target="_blank" rel="noopener" class="btn btn-outline" style="padding:0.25rem 0.7rem; font-size:0.72rem;">
                   <Fragment set:html={icon('github')} /> GitHub
                 </a>
@@ -142,7 +142,7 @@ import { icon, iconSet } from '../lib/icons.ts';
                 <h4 style="font-size:0.9rem; font-weight:700; color:var(--text);">
                   <a class="proj-link" href={`/progetti/${p.slug}/`} data-href={`/progetti/${p.slug}/`}>{typeof p.name === 'string' ? p.name : p.name.it}</a>
                 </h4>
-                {p.url && (
+                {p.url && !github[p.slug]?.private && (
                   <a href={p.url} target="_blank" rel="noopener" style="color:var(--accent); font-size:0.9rem; display:inline-flex;" aria-label="Open project"><Fragment set:html={icon('arrow-up-right')} /></a>
                 )}
               </div>

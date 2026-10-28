@@ -20,7 +20,25 @@ export function renderMarkdown(md: string, opts: MarkdownOptions = {}): string {
   const { repo, branch = 'HEAD', demoteHeadings = 0, stripEmoji = false } = opts;
   // Emoji are dropped (with their joiners and variation selectors) to match the site's vector-icon style.
   const source = stripEmoji ? md.replace(/\p{Emoji_Presentation}|\p{Extended_Pictographic}\ufe0f|[\u200d\ufe0f\u20e3]/gu, '').replace(/[ \t]+$/gm, '') : md;
-  const raw = marked.parse(source, { async: false, gfm: true }) as string;
+  // Task list markers ("- [x]") become small drawn boxes: the sanitizer drops <input>, and without them
+  // a checklist would no longer show what is done. Fenced code blocks are left alone.
+  let fence: string | null = null;
+  const withTasks = source
+    .split('\n')
+    .map((line) => {
+      const f = /^\s*(`{3,}|~{3,})/.exec(line)?.[1];
+      if (f) {
+        // A closing fence uses the same character and is at least as long as the opening one.
+        if (!fence) fence = f;
+        else if (f[0] === fence[0] && f.length >= fence.length) fence = null;
+        return line;
+      }
+      if (fence) return line;
+      return line.replace(/^(\s*(?:[-*+]|\d+[.)])\s+)\[([ xX])\]\s+/, (_m, lead, mark) =>
+        `${lead}<span class="task${mark === ' ' ? '' : ' done'}" role="img" aria-label="${mark === ' ' ? 'da fare' : 'fatto'}"></span> `);
+    })
+    .join('\n');
+  const raw = marked.parse(withTasks, { async: false, gfm: true }) as string;
 
   const heading = (level: number) => (tag: string, attribs: Record<string, string>) => ({
     tagName: `h${Math.min(6, level + demoteHeadings)}`,
@@ -29,11 +47,11 @@ export function renderMarkdown(md: string, opts: MarkdownOptions = {}): string {
 
   return sanitizeHtml(raw, {
     allowedTags: [
-      'p', 'br', 'hr', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'li', 'blockquote', 'pre', 'code',
+      'span', 'p', 'br', 'hr', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'li', 'blockquote', 'pre', 'code',
       'em', 'strong', 'del', 'a', 'table', 'thead', 'tbody', 'tr', 'th', 'td', 'details', 'summary', 'kbd', 'sub', 'sup',
     ],
-    allowedAttributes: { a: ['href', 'title', 'rel', 'target'], code: ['class'], th: ['align'], td: ['align'] },
-    allowedClasses: { code: [/^language-[\w-]+$/] },
+    allowedAttributes: { a: ['href', 'title', 'rel', 'target'], code: ['class'], span: ['class', 'role', 'aria-label'], th: ['align'], td: ['align'] },
+    allowedClasses: { code: [/^language-[\w-]+$/], span: ['task', 'done'] },
     allowedSchemes: ['http', 'https', 'mailto'],
     allowProtocolRelative: false,
     // Drop the content of these entirely instead of leaving their text behind.

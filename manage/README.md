@@ -26,6 +26,9 @@ manage/
 
 Each project in `projects.json` has a `slug` and gets a page at `/progetti/<slug>/`. Optional fields: `longDescription` (Markdown, it/en) and `images` (files in `public/projects/`).
 The **Sincronizza da GitHub** button on the Progetti tab fetches README, stars, languages and last-push date for every project whose `url` is a GitHub repo and commits them to `src/data/content/github.json`.
+Repos owned by someone else: the page credits the owner and shows the optional `contribution` text; their README is only mirrored when the project has `mirrorReadme` (use it only with the owner's agreement).
+Private repos: the page keeps showing the snapshot but hides every link to the repo. The admin page cannot read them (its token only has `public_repo`), so refresh them from a terminal with `npm run sync:github` (uses `gh auth token`).
+
 Nothing is fetched automatically and visitors never contact GitHub: the data is a snapshot baked into the pages at build time (READMEs are sanitized and their images dropped). `npm run sync:github` does the same from a terminal.
 
 ## Editing the schema

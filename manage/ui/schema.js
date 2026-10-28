@@ -133,6 +133,7 @@ export const FILES = [
           { type: 'file', key: 'file', label: 'Immagine', required: true, folder: 'public/projects', publicPrefix: '/projects/', accept: '.png,.jpg,.jpeg,.webp', maxMB: 3 },
           pair('alt', 'Descrizione dell’immagine', { required: false, hint: 'Per chi non la vede e come didascalia' }),
         ] },
+        bool('mirrorReadme', 'Mostra il README del repository', 'Per i repository di altri il README non viene copiato sul sito, salvo accordo con il proprietario'),
         bool('featured', 'In evidenza', 'I progetti in evidenza sono sempre visibili, gli altri stanno sotto «Altri progetti»'),
       ] },
     ],
