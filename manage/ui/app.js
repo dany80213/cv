@@ -43,11 +43,25 @@ const isDirty = (id) => {
 const anyDirty = () => FILES.some((f) => isDirty(f.id));
 
 // ---------- theme / toasts ----------
-function applyTheme(t) {
+// The favicon follows the browser theme by default; once a theme is chosen it follows that one.
+function setFavicon(t) {
+  const link = document.createElement('link');
+  link.rel = 'icon';
+  link.type = 'image/svg+xml';
+  link.href = `${SITE}/favicon-${t}.svg`;
+  document.querySelector('link[rel="icon"]')?.replaceWith(link);
+}
+// `explicit` is false for the initial default, so nothing is remembered until the user picks a theme.
+function applyTheme(t, { explicit = true } = {}) {
   document.documentElement.dataset.theme = t;
+  if (!explicit) return;
+  setFavicon(t);
   try { localStorage.setItem('cv-manage-theme', t); } catch { /* ignore */ }
 }
-try { applyTheme(localStorage.getItem('cv-manage-theme') === 'light' ? 'light' : 'dark'); } catch { /* ignore */ }
+try {
+  const saved = localStorage.getItem('cv-manage-theme');
+  applyTheme(saved === 'light' ? 'light' : 'dark', { explicit: !!saved });
+} catch { /* ignore */ }
 
 function toast(msg, kind = 'ok') {
   const t = h('div', { class: `toast ${kind === 'err' ? 'err' : ''}` }, ico(kind === 'err' ? 'circle-alert' : 'circle-check'), h('span', {}, msg));
