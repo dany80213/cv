@@ -1,6 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import { cv } from '../data/cv.ts';
+import { icon, iconSet } from '../lib/icons.ts';
 ---
 <Layout>
   <!-- NAV -->
@@ -22,7 +23,7 @@ import { cv } from '../data/cv.ts';
       <a href="#contact" class="nav-link" data-i18n="nav.contact">Contatti</a>
       <button id="lang-toggle" class="btn btn-outline" style="padding:0.3rem 0.8rem; font-size:0.75rem;">EN</button>
       <button id="theme-toggle" aria-label="toggle theme" style="background:none;border:none;cursor:pointer;color:var(--text-dim);font-size:1.2rem;line-height:1;">
-        <span id="theme-icon">☀️</span>
+        <span id="theme-icon" style="display:inline-flex;" set:html={icon('sun', { size: '1.2rem' })}></span>
       </button>
       <button id="terminal-btn" class="btn btn-outline" style="padding:0.3rem 0.8rem; font-size:0.75rem;" title="Easter egg">
         &gt;_
@@ -58,13 +59,13 @@ import { cv } from '../data/cv.ts';
     </p>
     <div style="display:flex; flex-wrap:wrap; gap:1rem; align-items:center;">
       <a href={`mailto:${cv.email}`} class="btn btn-primary">
-        ✉ {cv.email}
+        <Fragment set:html={icon('mail')} /> {cv.email}
       </a>
       <a href={cv.githubUrl} target="_blank" rel="noopener" class="btn btn-outline">
-        ⌥ github/{cv.github}
+        <Fragment set:html={icon('github')} /> github/{cv.github}
       </a>
       <a href="/Daniele_Porcaro_CV.pdf" download class="btn btn-outline">
-        ↓ Download CV PDF
+        <Fragment set:html={icon('download')} /> Download CV PDF
       </a>
     </div>
     <div style="margin-top:4rem; display:flex; gap:2rem; flex-wrap:wrap;">
@@ -110,7 +111,7 @@ import { cv } from '../data/cv.ts';
             <div style="display:flex; gap:0.5rem;">
               {p.url && (
                 <a href={p.url} target="_blank" rel="noopener" class="btn btn-outline" style="padding:0.25rem 0.7rem; font-size:0.72rem;">
-                  ↗ GitHub
+                  <Fragment set:html={icon('github')} /> GitHub
                 </a>
               )}
             </div>
@@ -138,7 +139,7 @@ import { cv } from '../data/cv.ts';
                   {typeof p.name === 'string' ? p.name : p.name.it}
                 </h4>
                 {p.url && (
-                  <a href={p.url} target="_blank" rel="noopener" style="color:var(--accent); font-size:0.75rem;">↗</a>
+                  <a href={p.url} target="_blank" rel="noopener" style="color:var(--accent); font-size:0.9rem; display:inline-flex;" aria-label="Open project"><Fragment set:html={icon('arrow-up-right')} /></a>
                 )}
               </div>
               <p class="proj-desc" style="color:var(--text-dim); font-size:0.82rem; margin-bottom:0.75rem;"
@@ -283,7 +284,7 @@ import { cv } from '../data/cv.ts';
     <div class="card" style="padding:1.5rem; margin-bottom:1.25rem; border-color:var(--accent);">
       <div style="display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:0.75rem;">
         <div>
-          <span class="badge" style="border-color:var(--accent); color:var(--accent); margin-bottom:0.5rem;" data-i18n="comp.label">🏆 Competizione</span>
+          <span class="badge" style="border-color:var(--accent); color:var(--accent); margin-bottom:0.5rem; gap:0.4rem;"><Fragment set:html={icon('trophy')} /><span data-i18n="comp.label">Competizione</span></span>
           <h3 class="comp-name" style="font-size:0.95rem; font-weight:700; margin-top:0.25rem;"
               data-it={cv.competitions[0].name.it}
               data-en={cv.competitions[0].name.en}>{cv.competitions[0].name.it}</h3>
@@ -333,14 +334,13 @@ import { cv } from '../data/cv.ts';
               <div style="display:flex; gap:0.4rem; flex-wrap:wrap; justify-content:flex-end;">
                 {'file' in c && c.file && (
                   <a href={`/certs/${c.file}`} download class="btn btn-outline" style="padding:0.2rem 0.6rem; font-size:0.7rem;">
-                    ↓ PDF
+                    <Fragment set:html={icon('download')} /> PDF
                   </a>
                 )}
                 {c.verifiable && (
                   <button class="btn btn-outline" style="padding:0.2rem 0.6rem; font-size:0.7rem;"
-                          data-i18n="cert.verify"
                           onclick={`document.getElementById('bitcoin-verify-${idx}').style.display = document.getElementById('bitcoin-verify-${idx}').style.display === 'none' ? 'block' : 'none'`}>
-                    ₿ Verify on-chain
+                    <Fragment set:html={icon('bitcoin')} /><span data-i18n="cert.verify">Verify on-chain</span>
                   </button>
                 )}
               </div>
@@ -369,7 +369,7 @@ import { cv } from '../data/cv.ts';
               <!-- Live verify button -->
               <div style="border-top:1px solid var(--border); padding-top:1rem;">
                 <button id="btc-verify-btn" class="btn btn-outline" style="font-size:0.78rem; padding:0.4rem 1rem;">
-                  ₿ Verifica timestamp live su blockchain Bitcoin
+                  <Fragment set:html={icon('bitcoin')} /> <span>Verifica timestamp live su blockchain Bitcoin</span>
                 </button>
                 <div id="btc-verify-result" style="margin-top:0.75rem;"></div>
               </div>
@@ -389,7 +389,7 @@ import { cv } from '../data/cv.ts';
         <div style="display:flex; flex-wrap:wrap; gap:0.75rem;">
           {cv.downloadableCerts.map(d => (
             <a href={`/certs/${d.file}`} download class="card" style="padding:1rem 1.25rem; display:flex; align-items:center; gap:0.75rem; text-decoration:none; flex:1; min-width:220px;">
-              <span style="font-size:1.5rem; line-height:1;">{d.icon}</span>
+              <span style="font-size:1.5rem; line-height:1; color:var(--accent); display:inline-flex;" set:html={icon(d.icon, { size: '1.5rem' })}></span>
               <div>
                 <div style="font-size:0.82rem; font-weight:700; color:var(--text);">{d.name}</div>
                 <div class="dl-cert-desc" style="font-size:0.72rem; color:var(--text-muted); margin-top:2px;"
@@ -398,7 +398,7 @@ import { cv } from '../data/cv.ts';
                   {typeof d.description === 'object' ? d.description.it : d.description}
                 </div>
               </div>
-              <span style="margin-left:auto; font-size:0.8rem; color:var(--accent);">↓</span>
+              <span style="margin-left:auto; font-size:1rem; color:var(--accent); display:inline-flex;" set:html={icon('download')}></span>
             </a>
           ))}
         </div>
@@ -414,8 +414,8 @@ import { cv } from '../data/cv.ts';
         Sono sempre aperto a nuove opportunità, collaborazioni o semplicemente a fare due chiacchiere di tech.
       </p>
       <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:1rem;">
-        <a href={`mailto:${cv.email}`} class="btn btn-primary">✉ {cv.email}</a>
-        <a href={cv.githubUrl} target="_blank" rel="noopener" class="btn btn-outline">⌥ GitHub</a>
+        <a href={`mailto:${cv.email}`} class="btn btn-primary"><Fragment set:html={icon('mail')} /> {cv.email}</a>
+        <a href={cv.githubUrl} target="_blank" rel="noopener" class="btn btn-outline"><Fragment set:html={icon('github')} /> GitHub</a>
       </div>
     </div>
   </section>
@@ -446,7 +446,7 @@ import { cv } from '../data/cv.ts';
     </div>
   </div>
 
-  <script define:vars={{ cvData: cv }}>
+  <script define:vars={{ cvData: cv, ic: iconSet }}>
     const lang = { current: 'it' };
     const t = {
       it: {
@@ -456,8 +456,8 @@ import { cv } from '../data/cv.ts';
         'stat.age':'anni','stat.projects':'progetti','stat.certs':'certificazioni',
         'greeting':'ciao, sono',
         'skills.languages':'Linguaggi','skills.frameworks':'Framework','skills.soft':'Soft skills:',
-        'edu.current':'in corso','comp.label':'🏆 Competizione',
-        'cert.verify':'₿ Verify on-chain','cert.txid':'TxID Bitcoin:','cert.hash':'Hash certificato:',
+        'edu.current':'in corso','comp.label':'Competizione',
+        'cert.verify':'Verify on-chain','cert.txid':'TxID Bitcoin:','cert.hash':'Hash certificato:',
         'cert.verify-note':'Certificato verificabile tramite OpenTimestamps (.ots) e firma GPG (.asc)',
         'contact.text':'Sono sempre aperto a nuove opportunità, collaborazioni o semplicemente a fare due chiacchiere di tech.',
         'footer.built':'Costruito con','footer.privacy':'Privacy & licenze','projects.more':'+ Altri progetti',
@@ -470,8 +470,8 @@ import { cv } from '../data/cv.ts';
         'stat.age':'years old','stat.projects':'projects','stat.certs':'certifications',
         'greeting':"hi, I'm",
         'skills.languages':'Languages','skills.frameworks':'Frameworks','skills.soft':'Soft skills:',
-        'edu.current':'ongoing','comp.label':'🏆 Competition',
-        'cert.verify':'₿ Verify on-chain','cert.txid':'Bitcoin TxID:','cert.hash':'Certificate hash:',
+        'edu.current':'ongoing','comp.label':'Competition',
+        'cert.verify':'Verify on-chain','cert.txid':'Bitcoin TxID:','cert.hash':'Certificate hash:',
         'cert.verify-note':'Certificate verifiable via OpenTimestamps (.ots) and GPG signature (.asc)',
         'contact.text':"I'm always open to new opportunities, collaborations, or just talking tech.",
         'footer.built':'Built with','footer.privacy':'Privacy & licenses','projects.more':'+ More projects',
@@ -510,7 +510,7 @@ import { cv } from '../data/cv.ts';
     document.getElementById('theme-toggle').addEventListener('click', () => {
       theme = theme === 'dark' ? 'light' : 'dark';
       document.documentElement.setAttribute('data-theme', theme);
-      document.getElementById('theme-icon').textContent = theme === 'dark' ? '☀️' : '🌙';
+      document.getElementById('theme-icon').innerHTML = theme === 'dark' ? ic['sun'].replace('1em', '1.2rem').replace('1em', '1.2rem') : ic['moon'].replace('1em', '1.2rem').replace('1em', '1.2rem');
     });
 
     // Bitcoin live verification
@@ -520,7 +520,7 @@ import { cv } from '../data/cv.ts';
 
     btcBtn && btcBtn.addEventListener('click', async () => {
       btcBtn.disabled = true;
-      btcBtn.textContent = '⏳ Interrogazione blockchain...';
+      btcBtn.innerHTML = ic['loader-circle'].replace('class="ico"', 'class="ico spin"') + ' <span>Interrogazione blockchain...</span>';
       btcResult.innerHTML = '';
       try {
         const [txRes, priceRes] = await Promise.allSettled([
@@ -543,7 +543,7 @@ import { cv } from '../data/cv.ts';
         btcResult.innerHTML = `
           <div style="background:var(--bg-card);border:1px solid var(--accent);border-radius:8px;padding:1rem;font-size:0.8rem;">
             <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.75rem;">
-              <span style="color:#22c55e;font-size:1.1rem;">✓</span>
+              <span style="color:#22c55e;font-size:1.1rem;display:inline-flex;">${ic['circle-check']}</span>
               <span style="color:#22c55e;font-weight:700;">Timestamp confermato su blockchain Bitcoin</span>
             </div>
             <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:0.75rem;">
@@ -567,8 +567,8 @@ import { cv } from '../data/cv.ts';
             </div>` : ''}
             <div style="margin-top:0.75rem;">
               <a href="https://blockstream.info/tx/${btcTxid}" target="_blank" rel="noopener"
-                 style="font-size:0.75rem;color:var(--accent);text-decoration:none;">
-                ↗ Visualizza su Blockstream Explorer
+                 style="font-size:0.75rem;color:var(--accent);text-decoration:none;display:inline-flex;align-items:center;gap:0.35rem;">
+                ${ic['arrow-up-right']} Visualizza su Blockstream Explorer
               </a>
             </div>
           </div>
@@ -576,7 +576,7 @@ import { cv } from '../data/cv.ts';
         btcBtn.style.display = 'none';
       } catch (err) {
         btcResult.innerHTML = `<p style="color:#ef4444;font-size:0.8rem;">Errore di connessione. Riprova o visita blockstream.info manualmente.</p>`;
-        btcBtn.textContent = '₿ Verifica live su blockchain Bitcoin';
+        btcBtn.innerHTML = ic['bitcoin'] + ' <span>Verifica live su blockchain Bitcoin</span>';
         btcBtn.disabled = false;
       }
     });
