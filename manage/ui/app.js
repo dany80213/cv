@@ -1,4 +1,5 @@
-import { FILES } from './schema.js';
+import { FILES, GITHUB_DATA_PATH } from './schema.js';
+import { syncProjects } from './sync.js';
 import * as api from './github.js';
 import { icon } from './icons.js';
 
@@ -147,7 +148,7 @@ function setValue(obj, f, v) {
 }
 
 function stringEl(f, obj) {
-  const input = h('input', { type: f.inputType || 'text', value: obj[f.key] ?? '', autocomplete: 'off', spellcheck: 'false' });
+  const input = h('input', { type: f.inputType || 'text', value: obj[f.key] ?? '', autocomplete: 'off', spellcheck: 'false', 'data-key': f.key });
   input.addEventListener('input', () => setValue(obj, f, input.value));
   return h('label', { class: 'field' }, labelOf(f), input, hintOf(f));
 }
@@ -189,9 +190,13 @@ function selectEl(f, obj) {
 
 function pairEl(f, obj) {
   const make = (lang, tag) => {
-    const el = f.multiline ? h('textarea', { rows: 4, spellcheck: 'false' }) : h('input', { type: 'text', autocomplete: 'off', spellcheck: 'false' });
+    const el = f.multiline ? h('textarea', { rows: f.rows || 4, spellcheck: 'false' }) : h('input', { type: 'text', autocomplete: 'off', spellcheck: 'false' });
     el.value = obj[f.key]?.[lang] ?? '';
-    el.addEventListener('input', () => { (obj[f.key] ??= {})[lang] = el.value; changed(); });
+    el.addEventListener('input', () => {
+      (obj[f.key] ??= {})[lang] = el.value;
+      if (!f.required && !obj[f.key].it && !obj[f.key].en) delete obj[f.key];
+      changed();
+    });
     return h('label', {}, h('span', { class: 'tag' }, tag), el);
   };
   return h('div', { class: 'field wide' }, labelOf(f), h('div', { class: 'pair' }, make('it', 'Italiano'), make('en', 'English')), hintOf(f));
@@ -237,25 +242,31 @@ function defaults(fields) {
     else if (f.type === 'number' && f.required) o[f.key] = 0;
     else if (f.type === 'pair' && f.required) o[f.key] = { it: '', en: '' };
     else if (f.type === 'pairlist') o[f.key] = { it: [], en: [] };
+    else if (f.type === 'strlist') o[f.key] = [];
     else if (f.type === 'select') o[f.key] = f.options[0][0];
   }
   return o;
 }
 
+const slugify = (t) => String(t || '').normalize('NFKD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+
 function listEl(f, obj) {
-  const arr = (obj[f.key] ??= []);
+  // Optional lists (e.g. images) are only created when the first item is added, so just opening a form never changes the data.
+  const arr = () => obj[f.key] || [];
+  const ensure = () => (obj[f.key] ??= []);
+  if (f.required !== false) ensure();
   const host = h('div', { class: 'list' });
   const draw = () => {
-    const items = arr.map((item, i) => itemEl(item, i));
+    const items = arr().map((item, i) => itemEl(item, i));
     const add = h('div', {}, h('button', {
       type: 'button', class: 'btn btn-outline',
       onclick: () => {
         const item = defaults(f.fields);
         openState.set(item, true);
-        arr.push(item);
+        ensure().push(item);
         changed();
         draw();
-        host.querySelectorAll('details.item')[arr.length - 1]?.querySelector('input, textarea')?.focus();
+        host.querySelectorAll(':scope > details.item')[arr().length - 1]?.querySelector('input, textarea')?.focus();
       },
     }, ico('plus'), f.addLabel || 'Aggiungi'));
     host.replaceChildren(...items, add);
@@ -266,8 +277,8 @@ function listEl(f, obj) {
     const move = (d) => (e) => {
       e.preventDefault(); e.stopPropagation();
       const j = i + d;
-      if (j < 0 || j >= arr.length) return;
-      [arr[i], arr[j]] = [arr[j], arr[i]];
+      if (j < 0 || j >= arr().length) return;
+      [arr()[i], arr()[j]] = [arr()[j], arr()[i]];
       changed(); draw();
     };
     const btn = (name, label, fn, cls = 'btn-ghost', disabled = false) =>
@@ -275,7 +286,9 @@ function listEl(f, obj) {
     const remove = (e) => {
       e.preventDefault(); e.stopPropagation();
       if (!confirm(`Eliminare «${f.itemLabel(item)}»?`)) return;
-      arr.splice(i, 1); changed(); draw();
+      arr().splice(i, 1);
+      if (!arr().length && f.required === false) delete obj[f.key];
+      changed(); draw();
     };
     const d = h('details', { class: 'card item' },
       h('summary', {},
@@ -284,13 +297,25 @@ function listEl(f, obj) {
         title,
         h('span', { class: 'item-actions' },
           btn('chevron-up', 'Sposta su', move(-1), 'btn-ghost', i === 0),
-          btn('chevron-down', 'Sposta giù', move(1), 'btn-ghost', i === arr.length - 1),
+          btn('chevron-down', 'Sposta giù', move(1), 'btn-ghost', i === arr().length - 1),
           btn('trash-2', 'Elimina', remove, 'btn-danger'))),
       h('div', { class: 'item-body' }, ...fieldsEl(f.fields, item)));
     d.open = !!openState.get(item);
-    d.addEventListener('toggle', () => openState.set(item, d.open));
-    d.addEventListener('input', () => { title.textContent = f.itemLabel(item); });
-    d.addEventListener('change', () => { title.textContent = f.itemLabel(item); });
+    d.addEventListener('toggle', (e) => { if (e.target === d) openState.set(item, d.open); });
+
+    // The page address is derived from the name until it is edited by hand.
+    let prevName = item[f.autoSlug?.from] || '';
+    const refresh = (e) => {
+      if (f.autoSlug && e?.target?.dataset?.key === f.autoSlug.from) {
+        const { from, to } = f.autoSlug;
+        const target = d.querySelector(`:scope > .item-body > label [data-key="${to}"]`);
+        if (target && (!item[to] || item[to] === slugify(prevName))) { item[to] = slugify(item[from]); target.value = item[to]; }
+        prevName = item[from] || '';
+      }
+      title.textContent = f.itemLabel(item);
+    };
+    d.addEventListener('input', refresh);
+    d.addEventListener('change', refresh);
     return d;
   };
   draw();
@@ -339,7 +364,8 @@ function fileEl(f, obj) {
     const ext = '.' + file.name.split('.').pop().toLowerCase();
     if (f.accept && !f.accept.split(',').includes(ext)) return toast(`Formato non valido: servono file ${f.accept}`, 'err');
     if (!/^[\w.\- ()]+$/.test(file.name)) return toast('Il nome del file contiene caratteri non ammessi. Usa lettere, numeri, trattini e punti.', 'err');
-    if (file.size > 10 * 1024 * 1024) return toast('File troppo grande (massimo 10 MB).', 'err');
+    const maxMB = f.maxMB ?? 10;
+    if (file.size > maxMB * 1024 * 1024) return toast(`File troppo grande (massimo ${maxMB} MB).`, 'err');
     upload.disabled = true;
     try {
       const name = await api.uploadFile(f.folder, file);
@@ -367,7 +393,16 @@ function validate(fields, obj, trail) {
     if (f.type === 'group') { errs.push(...validate(f.fields, obj, trail)); continue; }
     if (f.type === 'object') { errs.push(...validate(f.fields, obj[f.key] || {}, [...trail, f.label])); continue; }
     if (f.type === 'list') {
-      (obj[f.key] || []).forEach((item, i) => errs.push(...validate(f.fields, item, [...trail, `${f.label} ${i + 1} (${f.itemLabel(item)})`])));
+      const items = obj[f.key] || [];
+      items.forEach((item, i) => errs.push(...validate(f.fields, item, [...trail, `${f.label} ${i + 1} (${f.itemLabel(item)})`])));
+      for (const field of f.fields.filter((x) => x.unique)) {
+        const seen = new Set();
+        for (const item of items) {
+          const v = item[field.key];
+          if (v && seen.has(v)) errs.push(`${where} › ${field.label}: «${v}» è usato da più elementi`);
+          seen.add(v);
+        }
+      }
       continue;
     }
     const v = obj[f.key];
@@ -379,6 +414,7 @@ function validate(fields, obj, trail) {
     } else if (['string', 'text', 'select', 'file'].includes(f.type)) {
       if (f.required && !String(v ?? '').trim()) errs.push(`${where}: obbligatorio`);
       else if (f.inputType === 'url' && v && !/^https?:\/\//.test(v)) errs.push(`${where}: deve iniziare con http:// o https://`);
+      else if (f.pattern && v && !f.pattern.test(v)) errs.push(`${where}: ${f.patternHint || 'formato non valido'}`);
     }
   }
   return errs;
@@ -449,10 +485,46 @@ function renderPanel() {
     panel.replaceChildren(h('h1', {}, file.label), h('div', { class: 'card group' }, h('p', {}, `Impossibile leggere ${file.path}: ${doc.error}`),
       h('div', {}, h('button', { class: 'btn btn-outline', onclick: boot }, ico('refresh-cw'), 'Riprova'))));
   } else {
-    panel.replaceChildren(h('h1', {}, file.label), h('p', { class: 'hint' }, file.hint), ...fieldsEl(file.fields, doc.data));
+    panel.replaceChildren(h('h1', {}, file.label), h('p', { class: 'hint' }, file.hint), actionsBar(file), ...fieldsEl(file.fields, doc.data));
   }
   renderSavebar();
   refreshDirty();
+}
+
+function actionsBar(file) {
+  if (!file.actions?.length) return null;
+  const handlers = { 'sync-github': syncGithub };
+  return h('div', { class: 'actions' }, ...file.actions.map((a) => h('div', { class: 'action' },
+    h('button', { type: 'button', class: 'btn btn-outline', 'data-action': a.id, onclick: (e) => handlers[a.id](e.currentTarget) }, ico(a.id === 'sync-github' ? 'github' : 'refresh-cw'), a.label),
+    h('span', { class: 'hint' }, a.hint))));
+}
+
+// Downloads README, stars, languages... for every project with a GitHub URL and commits them to github.json.
+async function syncGithub(button) {
+  if (isDirty('projects')) return toast('Pubblica prima le modifiche ai progetti, poi sincronizza.', 'err');
+  const projects = state.docs.projects.data.projects;
+  button.disabled = true;
+  const label = button.lastChild;
+  const idle = label.textContent;
+  try {
+    const { data: existing, sha } = await api.readJsonOrDefault(GITHUB_DATA_PATH, {});
+    const res = await syncProjects(projects, existing, api.get, (slug) => { label.textContent = `Sincronizzo ${slug}…`; });
+    if (!res.synced.length) {
+      toast(res.failed.length ? `Sincronizzazione non riuscita: ${res.failed.map((x) => `${x.slug} (${x.error})`).join(', ')}` : 'Nessun progetto con un repository GitHub da sincronizzare.', 'err');
+      return;
+    }
+    const { commit } = await api.writeJson(GITHUB_DATA_PATH, res.data, sha, 'content: sync GitHub data');
+    const parts = [`Sincronizzati: ${res.synced.join(', ')}.`];
+    if (res.failed.length) parts.push(`Non riusciti: ${res.failed.map((x) => x.slug).join(', ')}.`);
+    toast(parts.join(' ') + ' Il sito si aggiorna tra circa un minuto.', res.failed.length ? 'err' : 'ok');
+    trackDeploy(commit);
+  } catch (e) {
+    if (e.status === 401) { api.setToken(null); state.user = null; showLogin('Sessione scaduta, accedi di nuovo.'); return; }
+    toast(`Sincronizzazione non riuscita: ${e.message}`, 'err');
+  } finally {
+    label.textContent = idle;
+    button.disabled = false;
+  }
 }
 
 function renderSavebar() {

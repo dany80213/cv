@@ -10,16 +10,23 @@ manage/
     ├── index.html, app.css, app.js
     ├── schema.js  which fields each JSON file has and how they are edited
     ├── github.js  GitHub Contents API client
+    ├── sync.js    GitHub data snapshot for the project pages (shared with scripts/sync-github.mjs)
     └── icons.js   inline SVG icons (Lucide ISC, Simple Icons CC0)
 ```
 
 ## How it works
 
-- The Worker serves `ui/*` from `raw.githubusercontent.com/.../main/manage/ui/` (whitelisted file names only, cached ~1 min). **Changing the page is a normal PR; no Worker redeploy is needed.**
+- The Worker serves `ui/index.html` and flat `ui/*.js|css` modules from `raw.githubusercontent.com/.../main/manage/ui/` (no paths, cached ~1 min). **Changing the page, or adding a module, is a normal PR; no Worker redeploy is needed.**
 - Login: the page opens `/auth` in a popup, GitHub redirects to `/callback`, and the Worker hands the token back to the page with `postMessage` to its own origin only.
 - Only the GitHub user in `ALLOWED_USER` (`dany80213`) gets a token; anyone else is refused by the Worker, even if they have write access to the repo.
 - The token stays in the browser tab (`sessionStorage`) and goes only to `api.github.com`. The Worker never stores it.
 - A strict Content-Security-Policy (set by the Worker) limits the page to its own scripts, the GitHub API and the CV site for fonts/images.
+
+## Project pages and GitHub sync
+
+Each project in `projects.json` has a `slug` and gets a page at `/progetti/<slug>/`. Optional fields: `longDescription` (Markdown, it/en) and `images` (files in `public/projects/`).
+The **Sincronizza da GitHub** button on the Progetti tab fetches README, stars, languages and last-push date for every project whose `url` is a GitHub repo and commits them to `src/data/content/github.json`.
+Nothing is fetched automatically and visitors never contact GitHub: the data is a snapshot baked into the pages at build time (READMEs are sanitized and their images dropped). `npm run sync:github` does the same from a terminal.
 
 ## Editing the schema
 

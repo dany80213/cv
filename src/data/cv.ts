@@ -5,6 +5,7 @@ import education from './content/education.json';
 import certs from './content/certifications.json';
 import projects from './content/projects.json';
 import skills from './content/skills.json';
+import githubJson from './content/github.json';
 
 // A field stored as `key` (+ optional `key_en`) becomes a plain string,
 // or an { it, en } pair when an English variant exists.
@@ -29,3 +30,23 @@ export const cv = {
   competitions: certs.competitions,
   downloadableCerts: certs.downloadableCerts.map((d) => ({ ...d, file: baseName(d.file) })),
 } as any;
+
+/** Snapshot of each project's GitHub repo, keyed by project slug (refreshed by `npm run sync:github` or the admin page). */
+export interface GithubSnapshot {
+  repo: string;
+  stars: number;
+  forks: number;
+  issues: number;
+  language: string | null;
+  languages: Record<string, number>;
+  topics: string[];
+  license: string | null;
+  homepage: string | null;
+  defaultBranch: string;
+  archived: boolean;
+  createdAt: string;
+  pushedAt: string;
+  readme: string | null;
+  fetchedAt: string;
+}
+export const github = githubJson as Record<string, GithubSnapshot>;

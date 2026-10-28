@@ -179,3 +179,8 @@ details.item[open] .chev { transform: rotate(90deg); }
 .term-body .hi { color: var(--accent); font-weight: 700; }
 .login-error { color: var(--danger); font-size: 0.8rem; }
 .empty, .loading { color: var(--text-muted); padding: 2rem 0; display: flex; gap: 0.6rem; align-items: center; }
+
+/* section actions (e.g. GitHub sync) */
+.actions { display: grid; gap: 0.75rem; margin-bottom: 1.5rem; }
+.action { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+.action .hint { flex: 1; min-width: 14rem; }

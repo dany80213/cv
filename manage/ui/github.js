@@ -19,11 +19,11 @@ export class ApiError extends Error {
   constructor(status, message) { super(message); this.status = status; }
 }
 
-async function gh(path, { method = 'GET', body } = {}) {
+async function gh(path, { method = 'GET', body, accept = 'application/vnd.github+json', text = false } = {}) {
   const res = await fetch(API + path, {
     method,
     headers: {
-      accept: 'application/vnd.github+json',
+      accept,
       'x-github-api-version': '2022-11-28',
       authorization: `Bearer ${token}`,
       ...(body ? { 'content-type': 'application/json' } : {}),
@@ -35,8 +35,13 @@ async function gh(path, { method = 'GET', body } = {}) {
     try { msg = (await res.json()).message || msg; } catch { /* not JSON */ }
     throw new ApiError(res.status, msg);
   }
-  return res.status === 204 ? null : res.json();
+  if (res.status === 204) return null;
+  return text ? res.text() : res.json();
 }
+
+/** GET used by sync.js: parsed JSON, or the raw file text when kind === 'raw'. */
+export const get = (path, kind) =>
+  kind === 'raw' ? gh(path, { accept: 'application/vnd.github.raw+json', text: true }) : gh(path);
 
 const enc = new TextEncoder();
 const dec = new TextDecoder();
@@ -55,7 +60,12 @@ export async function readJson(path) {
   return { data: JSON.parse(dec.decode(fromBase64(r.content))), sha: r.sha };
 }
 
-/** Commits the file to main. Returns the new blob sha and the commit sha. */
+/** Like readJson, but a missing file gives { data: fallback, sha: undefined }. */
+export async function readJsonOrDefault(path, fallback) {
+  try { return await readJson(path); } catch (e) { if (e.status === 404) return { data: fallback, sha: undefined }; throw e; }
+}
+
+/** Commits the file to main (creates it when sha is undefined). Returns the new blob sha and the commit sha. */
 export async function writeJson(path, data, sha, message) {
   const r = await gh(contentsUrl(path), {
     method: 'PUT',

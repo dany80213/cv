@@ -1,0 +1,236 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { cv, github } from '../../data/cv.ts';
+import { renderMarkdown } from '../../lib/markdown.ts';
+import { icon } from '../../lib/icons.ts';
+
+export function getStaticPaths() {
+  return cv.projects.map((p: any) => ({ params: { slug: p.slug }, props: { slug: p.slug } }));
+}
+
+const { slug } = Astro.props;
+const projects = cv.projects as any[];
+const p = projects.find((x) => x.slug === slug);
+const gh = github[slug];
+const others = projects.filter((x) => x.slug !== slug);
+
+const langs = ['it', 'en'] as const;
+type Lang = (typeof langs)[number];
+const pick = (v: any, l: Lang) => (v && typeof v === 'object' ? (v[l] ?? v.it) : v);
+
+const T = {
+  it: {
+    back: 'Progetti', repo: 'Repository', site: 'Sito', desc: 'Descrizione', shots: 'Immagini', readme: 'README',
+    stars: 'stelle', forks: 'fork', updated: 'ultimo aggiornamento', license: 'licenza', language: 'linguaggio principale',
+    langs: 'Linguaggi', more: 'Altri progetti', archived: 'archiviato',
+    note: (d: string) => `Importato da GitHub il ${d}, nella lingua originale del repository.`,
+    openOnGh: 'Apri su GitHub',
+  },
+  en: {
+    back: 'Projects', repo: 'Repository', site: 'Website', desc: 'Description', shots: 'Images', readme: 'README',
+    stars: 'stars', forks: 'forks', updated: 'last updated', license: 'license', language: 'main language',
+    langs: 'Languages', more: 'More projects', archived: 'archived',
+    note: (d: string) => `Imported from GitHub on ${d}, in the repository's original language.`,
+    openOnGh: 'Open on GitHub',
+  },
+};
+const fmt = (iso: string, l: Lang, day = false) =>
+  new Intl.DateTimeFormat(l === 'it' ? 'it-IT' : 'en-GB', day ? { day: 'numeric', month: 'long', year: 'numeric' } : { month: 'long', year: 'numeric' }).format(new Date(iso));
+
+// Language bar: the top 6 languages by bytes, the rest grouped as "other".
+const langBar = (() => {
+  if (!gh?.languages) return [];
+  const entries = Object.entries(gh.languages).sort((a, b) => b[1] - a[1]);
+  const total = entries.reduce((s, [, n]) => s + n, 0) || 1;
+  const top = entries.slice(0, 6).map(([name, n]) => ({ name, pct: (n / total) * 100 }));
+  const rest = entries.slice(6).reduce((s, [, n]) => s + n, 0);
+  if (rest) top.push({ name: '…', pct: (rest / total) * 100 });
+  return top;
+})();
+
+const pct = (v: number, l: Lang) => (v < 0.1 ? (l === 'it' ? '<0,1%' : '<0.1%') : `${v.toFixed(1).replace('.', l === 'it' ? ',' : '.')}%`);
+
+const readmeHtml = gh?.readme
+  ? renderMarkdown(gh.readme, { repo: gh.repo, branch: gh.defaultBranch, demoteHeadings: 1, stripEmoji: true })
+  : '';
+const description = pick(p.description, 'it');
+const nameIt = pick(p.name, 'it');
+---
+<Layout title={`${nameIt} – Daniele Porcaro`} description={description}>
+  <main class="pj">
+    <nav class="pj-nav">
+      <a id="back-link" href="/#projects" class="pj-back">
+        <Fragment set:html={icon('arrow-left')} /> <span data-lang="it">{T.it.back}</span><span data-lang="en" hidden>{T.en.back}</span>
+      </a>
+      <div class="pj-tools">
+        <button id="lang-toggle" class="btn btn-outline" style="padding:0.3rem 0.8rem; font-size:0.75rem;">EN</button>
+        <button id="theme-toggle" aria-label="toggle theme" class="pj-theme"><span id="theme-icon" set:html={icon('sun', { size: '1.2rem' })}></span></button>
+      </div>
+    </nav>
+
+    {langs.map((l) => (
+      <article data-lang={l} lang={l} hidden={l !== 'it'}>
+        <header>
+          <h1>{pick(p.name, l)}</h1>
+          <p class="pj-lead">{pick(p.description, l)}</p>
+          <div class="pj-tags">{(p.tech ?? []).map((t: string) => <span class="badge">{t}</span>)}</div>
+          <div class="pj-actions">
+            {p.url && <a href={p.url} target="_blank" rel="noopener" class="btn btn-primary"><Fragment set:html={icon('github')} /> {T[l].openOnGh}</a>}
+            {gh?.homepage && <a href={gh.homepage} target="_blank" rel="noopener" class="btn btn-outline"><Fragment set:html={icon('external-link')} /> {T[l].site}</a>}
+          </div>
+        </header>
+
+        {gh && (
+          <section class="pj-stats" aria-label="GitHub">
+            <div class="pj-stat"><Fragment set:html={icon('star')} /><b>{gh.stars}</b><span>{T[l].stars}</span></div>
+            <div class="pj-stat"><Fragment set:html={icon('git-fork')} /><b>{gh.forks}</b><span>{T[l].forks}</span></div>
+            <div class="pj-stat"><Fragment set:html={icon('history')} /><b>{fmt(gh.pushedAt, l)}</b><span>{T[l].updated}</span></div>
+            {gh.license && <div class="pj-stat"><Fragment set:html={icon('scale')} /><b>{gh.license}</b><span>{T[l].license}</span></div>}
+            {gh.archived && <div class="pj-stat"><span class="badge">{T[l].archived}</span></div>}
+          </section>
+        )}
+
+        {langBar.length > 0 && (
+          <section class="pj-langs">
+            <h2>{T[l].langs}</h2>
+            <div class="pj-bar" role="img" aria-label={langBar.map((x) => `${x.name} ${pct(x.pct, l)}`).join(', ')}>
+              {langBar.map((x, i) => <span style={`width:${x.pct}%; opacity:${1 - i * 0.13}`}></span>)}
+            </div>
+            <ul class="pj-legend">
+              {langBar.map((x, i) => <li><i style={`opacity:${1 - i * 0.13}`}></i>{x.name} <small>{pct(x.pct, l)}</small></li>)}
+            </ul>
+          </section>
+        )}
+
+        {pick(p.longDescription, l) && (
+          <section>
+            <h2>{T[l].desc}</h2>
+            <div class="md" set:html={renderMarkdown(pick(p.longDescription, l), { demoteHeadings: 2 })}></div>
+          </section>
+        )}
+
+        {p.images?.length > 0 && (
+          <section>
+            <h2>{T[l].shots}</h2>
+            <div class="pj-shots">
+              {p.images.map((im: any) => (
+                <figure>
+                  <img src={`/projects/${im.file}`} alt={pick(im.alt, l) ?? ''} loading="lazy" />
+                  {pick(im.alt, l) && <figcaption>{pick(im.alt, l)}</figcaption>}
+                </figure>
+              ))}
+            </div>
+          </section>
+        )}
+      </article>
+    ))}
+
+    {readmeHtml && (
+      <section class="pj-readme">
+        <h2>README</h2>
+        {langs.map((l) => (
+          <p class="pj-note" data-lang={l} hidden={l !== 'it'}>
+            {T[l].note(fmt(gh.fetchedAt, l, true))} <a href={`https://github.com/${gh.repo}#readme`} target="_blank" rel="noopener">{T[l].openOnGh}</a>
+          </p>
+        ))}
+        <div class="md card" set:html={readmeHtml}></div>
+      </section>
+    )}
+
+    {others.length > 0 && (
+      <section class="pj-more">
+        {langs.map((l) => (
+          <h2 data-lang={l} hidden={l !== 'it'}>{T[l].more}</h2>
+        ))}
+        <ul>
+          {others.map((o) => (
+            <li>
+              <a class="proj-link" href={`/progetti/${o.slug}/`} data-href={`/progetti/${o.slug}/`}>
+                <span data-lang="it">{pick(o.name, 'it')}</span><span data-lang="en" hidden>{pick(o.name, 'en')}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
+  </main>
+
+  <style is:global>
+    .pj { max-width: 860px; margin: 0 auto; padding: 2rem 1.5rem 5rem; }
+    .pj-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2.5rem; }
+    .pj-back { color: var(--text-dim); text-decoration: none; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 0.4rem; }
+    .pj-back:hover { color: var(--accent); }
+    .pj-tools { display: flex; gap: 0.75rem; align-items: center; }
+    .pj-theme { background: none; border: none; cursor: pointer; color: var(--text-dim); font-size: 1.2rem; line-height: 1; display: inline-flex; }
+    .pj h1 { font-size: clamp(1.8rem, 5vw, 2.8rem); font-weight: 700; line-height: 1.15; margin-bottom: 0.75rem; }
+    .pj-lead { color: var(--text-dim); font-size: 0.98rem; line-height: 1.75; max-width: 680px; margin-bottom: 1.25rem; }
+    .pj-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 1.5rem; }
+    .pj-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 2.5rem; }
+    .pj h2 { font-size: 0.8rem; color: var(--accent); letter-spacing: 0.12em; text-transform: uppercase; margin: 2.5rem 0 1rem; display: flex; align-items: center; gap: 0.75rem; }
+    .pj h2::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+    .pj-stats { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+    .pj-stat { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 0.7rem 1rem; display: flex; align-items: center; gap: 0.5rem; font-size: 0.8rem; color: var(--text-muted); }
+    .pj-stat svg { color: var(--accent); }
+    .pj-stat b { color: var(--text); font-weight: 700; }
+    .pj-bar { display: flex; height: 8px; border-radius: 4px; overflow: hidden; background: var(--border); gap: 2px; }
+    .pj-bar span { background: var(--accent); min-width: 3px; }
+    .pj-legend { list-style: none; display: flex; flex-wrap: wrap; gap: 0.4rem 1.25rem; margin-top: 0.75rem; font-size: 0.78rem; color: var(--text-dim); }
+    .pj-legend i { display: inline-block; width: 8px; height: 8px; border-radius: 2px; background: var(--accent); margin-right: 0.4rem; }
+    .pj-legend small { color: var(--text-muted); }
+    .pj-shots { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; }
+    .pj-shots figure { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+    .pj-shots img { display: block; width: 100%; height: auto; }
+    .pj-shots figcaption { padding: 0.6rem 0.9rem; font-size: 0.76rem; color: var(--text-muted); }
+    .pj-note { color: var(--text-muted); font-size: 0.76rem; margin-bottom: 1rem; }
+    .pj-note a, .md a { color: var(--accent); }
+    .pj-more ul { list-style: none; display: grid; gap: 0.5rem; }
+    .pj-more a { color: var(--text-dim); text-decoration: none; }
+    .pj-more a:hover { color: var(--accent); }
+    .md { color: var(--text-dim); font-size: 0.88rem; line-height: 1.8; overflow-wrap: anywhere; }
+    .md.card { padding: 1.5rem; }
+    .md.card:hover { transform: none; background: var(--bg-card); border-color: var(--border); }
+    .md > :first-child { margin-top: 0; }
+    .md h2, .md h3, .md h4, .md h5, .md h6 { color: var(--text); text-transform: none; letter-spacing: 0; margin: 1.6rem 0 0.6rem; display: block; font-size: 1.05rem; }
+    .md h2::after { display: none; }
+    .md h3 { font-size: 0.98rem; } .md h4, .md h5, .md h6 { font-size: 0.9rem; }
+    .md p, .md ul, .md ol, .md pre, .md table, .md blockquote, .md details { margin-bottom: 1rem; }
+    .md ul, .md ol { padding-left: 1.4rem; }
+    .md ul { list-style: disc; } .md ol { list-style: decimal; }
+    .md li::marker { color: var(--accent); }
+    .md li { margin-bottom: 0.25rem; }
+    .md code { background: var(--bg); border: 1px solid var(--border); border-radius: 4px; padding: 0.05rem 0.35rem; font-size: 0.84em; color: var(--text); }
+    .md pre { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; overflow-x: auto; }
+    .md pre code { background: none; border: none; padding: 0; }
+    .md blockquote { border-left: 3px solid var(--accent); padding-left: 1rem; color: var(--text-muted); }
+    .md table { display: block; overflow-x: auto; border-collapse: collapse; }
+    .md th, .md td { border: 1px solid var(--border); padding: 0.4rem 0.7rem; text-align: left; }
+    .md th { background: var(--bg); color: var(--text); }
+    .md hr { border: none; border-top: 1px solid var(--border); margin: 1.5rem 0; }
+    .md summary { cursor: pointer; color: var(--text); }
+  </style>
+
+  <script define:vars={{ sunIcon: icon('sun', { size: '1.2rem' }), moonIcon: icon('moon', { size: '1.2rem' }) }}>
+    const toggle = document.getElementById('lang-toggle');
+    function setLang(l) {
+      document.documentElement.lang = l;
+      document.querySelectorAll('[data-lang]').forEach((e) => { e.hidden = e.dataset.lang !== l; });
+      toggle.textContent = l === 'it' ? 'EN' : 'IT';
+      toggle.dataset.lang = l;
+      document.querySelectorAll('a[data-href]').forEach((a) => { a.href = `${a.dataset.href}?lang=${l}`; });
+      document.getElementById('back-link').href = `/?lang=${l}#projects`;
+    }
+    setLang(new URLSearchParams(location.search).get('lang') === 'en' ? 'en' : 'it');
+    toggle.addEventListener('click', () => setLang(toggle.dataset.lang === 'it' ? 'en' : 'it'));
+
+    // Theme toggle (also switches the favicon, like on the home page).
+    let theme = 'dark';
+    document.getElementById('theme-toggle').addEventListener('click', () => {
+      theme = theme === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', theme);
+      const link = document.createElement('link');
+      link.rel = 'icon'; link.type = 'image/svg+xml'; link.href = `/favicon-${theme}.svg`;
+      document.querySelector('link[rel="icon"][type="image/svg+xml"]')?.replaceWith(link);
+      document.getElementById('theme-icon').innerHTML = theme === 'dark' ? sunIcon : moonIcon;
+    });
+  </script>
+</Layout>
