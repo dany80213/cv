@@ -10,15 +10,10 @@
 const ORIGIN = 'https://manage.retenasa.dev';
 const UI_BASE = 'https://raw.githubusercontent.com/dany80213/cv/main/manage/ui/';
 
-// Only these files can be served; anything else under /admin/ is a 404.
-const FILES = {
-  'index.html': 'text/html; charset=utf-8',
-  'app.js': 'text/javascript; charset=utf-8',
-  'schema.js': 'text/javascript; charset=utf-8',
-  'github.js': 'text/javascript; charset=utf-8',
-  'icons.js': 'text/javascript; charset=utf-8',
-  'app.css': 'text/css; charset=utf-8',
-};
+// Only index.html and flat .js/.css modules from manage/ui/ can be served (no slashes, no dots
+// other than the extension); anything else under /admin/ is a 404.
+const MIME = { html: 'text/html; charset=utf-8', js: 'text/javascript; charset=utf-8', css: 'text/css; charset=utf-8' };
+const uiType = (file) => (file === 'index.html' ? MIME.html : /^[a-z][a-z0-9-]*\.(js|css)$/.exec(file) ? MIME[file.split('.').pop()] : null);
 
 // The page holds a GitHub token, so it may only load its own code and talk to the GitHub API.
 const PAGE_CSP = [
@@ -72,7 +67,7 @@ async function serveUi(file) {
   const upstream = await fetch(UI_BASE + file, { cf: { cacheTtl: 60, cacheEverything: true } });
   if (!upstream.ok) return text('Admin page unavailable', 502);
   return new Response(upstream.body, {
-    headers: { 'content-type': FILES[file], 'content-security-policy': PAGE_CSP, ...SEC },
+    headers: { 'content-type': uiType(file), 'content-security-policy': PAGE_CSP, ...SEC },
   });
 }
 
@@ -86,7 +81,7 @@ export default {
     if (path === '/admin' || path === '/admin/') return serveUi('index.html');
     if (path.startsWith('/admin/')) {
       const file = path.slice('/admin/'.length);
-      return Object.hasOwn(FILES, file) ? serveUi(file) : text('Not found', 404);
+      return uiType(file) ? serveUi(file) : text('Not found', 404);
     }
 
     if (path === '/auth') {

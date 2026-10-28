@@ -2,6 +2,7 @@
   "projects": [
     {
       "name": "alarm-system",
+      "slug": "alarm-system",
       "description": {
         "it": "Sistema antifurto self-hosted con sensori RF 433 MHz, bridge Tasmota/MQTT, REST API (FastAPI), dashboard web real-time e logica multi-zona.",
         "en": "Self-hosted home alarm system with RF 433 MHz sensors, Tasmota/MQTT bridge, REST API (FastAPI), real-time web dashboard and multi-zone logic."
@@ -20,6 +21,7 @@
     },
     {
       "name": "Bitcoin Tracker – Axial Corona",
+      "slug": "bitcoin-tracker",
       "description": {
         "it": "Dashboard personale per Bitcoin con analisi tecnica avanzata (RSI, MACD, Fibonacci, ATR) e AI advisor integrato via Google Gemini.",
         "en": "Personal Bitcoin dashboard with advanced technical analysis (RSI, MACD, Fibonacci, ATR) and integrated AI advisor powered by Google Gemini."
@@ -37,6 +39,7 @@
     },
     {
       "name": "party-webapp",
+      "slug": "party-webapp",
       "description": {
         "it": "Web app full-stack per organizzare feste: inviti con QR code, calendario, autenticazione, notifiche email via Google APIs.",
         "en": "Full-stack web app for party management: QR-coded invites, calendar integration, authentication and email notifications via Google APIs."
@@ -54,6 +57,7 @@
     },
     {
       "name": "irrigation-system",
+      "slug": "irrigation-system",
       "description": {
         "it": "Sistema di irrigazione automatica per piante con ESP32, gestione via web e schedulazione.",
         "en": "Automatic plant irrigation system using ESP32 with web-based control and scheduling."
@@ -69,6 +73,7 @@
     {
       "name": "Caldaia Smart",
       "name_en": "Smart Boiler",
+      "slug": "caldaia-smart",
       "description": {
         "it": "Sistema di controllo caldaia con Arduino, display Nextion, sensori di temperatura. Progetto collaborativo scolastico.",
         "en": "Boiler control system using Arduino, Nextion touchscreen display and temperature sensors. Collaborative school project."

@@ -12,6 +12,8 @@ const strlist = (key, label, extra = {}) => ({ type: 'strlist', key, label, ...e
 const pairlist = (key, label) => ({ type: 'pairlist', key, label });
 const bool = (key, label, hint) => ({ type: 'bool', key, label, hint });
 
+export const GITHUB_DATA_PATH = 'src/data/content/github.json';
+
 export const ICONS = [
   ['bitcoin', 'Bitcoin'],
   ['bot', 'Robotica'],
@@ -112,15 +114,24 @@ export const FILES = [
   {
     id: 'projects',
     label: 'Progetti',
-    hint: 'I progetti mostrati nel CV.',
+    hint: 'I progetti mostrati nel CV. Ognuno ha una sua pagina su /progetti/indirizzo/.',
     path: 'src/data/content/projects.json',
+    actions: [
+      { id: 'sync-github', label: 'Sincronizza da GitHub', hint: 'Scarica README, stelle, linguaggi e data dell’ultimo aggiornamento dei progetti con un repository GitHub e li pubblica.' },
+    ],
     fields: [
-      { type: 'list', key: 'projects', label: 'Progetti', itemLabel: (i) => i.name || 'Nuovo progetto', addLabel: 'Aggiungi progetto', fields: [
+      { type: 'list', key: 'projects', label: 'Progetti', itemLabel: (i) => i.name || 'Nuovo progetto', addLabel: 'Aggiungi progetto', autoSlug: { from: 'name', to: 'slug' }, fields: [
         str('name', 'Nome (italiano)'),
         opt('name_en', 'Nome (inglese)', { hint: 'Solo se diverso dall’italiano' }),
-        pair('description', 'Descrizione', { multiline: true }),
+        str('slug', 'Indirizzo della pagina', { pattern: /^[a-z0-9]+(-[a-z0-9]+)*$/, patternHint: 'solo minuscole, numeri e trattini (es. alarm-system)', unique: true, hint: 'La pagina sarà /progetti/<indirizzo>/. Cambiarlo rompe i vecchi link.' }),
+        pair('description', 'Descrizione breve', { multiline: true, hint: 'Compare nella card e in cima alla pagina del progetto' }),
+        pair('longDescription', 'Testo esteso', { multiline: true, required: false, rows: 8, hint: 'Facoltativo. Supporta Markdown: **grassetto**, elenchi, [link](https://…)' }),
         strlist('tech', 'Tecnologie'),
-        opt('url', 'Link', { inputType: 'url', hint: 'GitHub o sito. Vuoto = nessun link' }),
+        opt('url', 'Link', { inputType: 'url', hint: 'GitHub o sito. Se è un repository GitHub, la sincronizzazione usa questo indirizzo' }),
+        { type: 'list', key: 'images', label: 'Immagini', required: false, itemLabel: (i) => i.file || 'Nuova immagine', addLabel: 'Aggiungi immagine', fields: [
+          { type: 'file', key: 'file', label: 'Immagine', required: true, folder: 'public/projects', publicPrefix: '/projects/', accept: '.png,.jpg,.jpeg,.webp', maxMB: 3 },
+          pair('alt', 'Descrizione dell’immagine', { required: false, hint: 'Per chi non la vede e come didascalia' }),
+        ] },
         bool('featured', 'In evidenza', 'I progetti in evidenza sono sempre visibili, gli altri stanno sotto «Altri progetti»'),
       ] },
     ],

@@ -174,3 +174,25 @@ body {
 .spin { animation: spin 1s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 @media (prefers-reduced-motion: reduce) { .spin { animation: none; } }
+
+/* Hero typewriter: untyped text stays in the layout but is invisible */
+.tw-rest { visibility: hidden; }
+.tw-cursor {
+  display: inline-block; width: 0.55ch; height: 1.05em; margin: 0 -0.55ch 0 0.08ch; vertical-align: -0.15em;
+  background: var(--accent); animation: tw-blink 1s steps(1) infinite;
+}
+@keyframes tw-blink { 50% { opacity: 0; } }
+
+/* Cards fade in one after the other (classes are added by script, removed when done) */
+.reveal { opacity: 0; transform: translateY(16px); }
+.reveal.in {
+  opacity: 1; transform: none;
+  transition: opacity 0.55s ease var(--d, 0ms), transform 0.55s ease var(--d, 0ms), background 0.2s, border-color 0.2s;
+}
+.stat-num { font-variant-numeric: tabular-nums; }
+.proj-link { color: inherit; text-decoration: none; }
+.proj-link:hover { color: var(--accent); }
+@media (prefers-reduced-motion: reduce) {
+  .tw-cursor { animation: none; }
+  .reveal, .reveal.in { opacity: 1; transform: none; transition: none; }
+}

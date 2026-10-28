@@ -47,7 +47,7 @@ import { icon, iconSet } from '../lib/icons.ts';
     <p style="color:var(--accent); font-size:0.85rem; margin-bottom:1rem; opacity:0.8;">
       <span id="greeting">ciao, sono</span>
     </p>
-    <h1 style="font-size: clamp(2.5rem, 7vw, 5rem); font-weight:700; line-height:1.1; margin-bottom:0.5rem;">
+    <h1 id="hero-title" style="font-size: clamp(2.5rem, 7vw, 5rem); font-weight:700; line-height:1.1; margin-bottom:0.5rem;">
       Daniele<br/><span style="color:var(--accent)">Porcaro</span>
     </h1>
     <h2 style="font-size: clamp(1rem, 3vw, 1.5rem); color:var(--text-dim); margin-bottom:1.5rem; font-weight:400;">
@@ -70,19 +70,19 @@ import { icon, iconSet } from '../lib/icons.ts';
     </div>
     <div style="margin-top:4rem; display:flex; gap:2rem; flex-wrap:wrap;">
       <div>
-        <div style="font-size:1.8rem; font-weight:700; color:var(--accent)">{cv.age}</div>
+        <div class="stat-num" data-count style="font-size:1.8rem; font-weight:700; color:var(--accent)">{cv.age}</div>
         <div style="font-size:0.75rem; color:var(--text-muted)" data-i18n="stat.age">anni</div>
       </div>
       <div>
-        <div style="font-size:1.8rem; font-weight:700; color:var(--accent)">{cv.projectsCount}</div>
+        <div class="stat-num" data-count style="font-size:1.8rem; font-weight:700; color:var(--accent)">{cv.projectsCount}</div>
         <div style="font-size:0.75rem; color:var(--text-muted)" data-i18n="stat.projects">progetti</div>
       </div>
       <div>
-        <div style="font-size:1.8rem; font-weight:700; color:var(--accent)">{cv.pcto.hours}h</div>
+        <div class="stat-num" data-count style="font-size:1.8rem; font-weight:700; color:var(--accent)">{cv.pcto.hours}h</div>
         <div style="font-size:0.75rem; color:var(--text-muted)">PCTO</div>
       </div>
       <div>
-        <div style="font-size:1.8rem; font-weight:700; color:var(--accent)">{cv.certifications.length}</div>
+        <div class="stat-num" data-count style="font-size:1.8rem; font-weight:700; color:var(--accent)">{cv.certifications.length}</div>
         <div style="font-size:0.75rem; color:var(--text-muted)" data-i18n="stat.certs">certificazioni</div>
       </div>
     </div>
@@ -106,9 +106,12 @@ import { icon, iconSet } from '../lib/icons.ts';
         <div class="card" style="padding:1.5rem;">
           <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:0.75rem; margin-bottom:0.75rem;">
             <h3 style="font-size:1rem; font-weight:700; color:var(--text);">
-              {typeof p.name === 'string' ? p.name : p.name.it}
+              <a class="proj-link" href={`/progetti/${p.slug}/`} data-href={`/progetti/${p.slug}/`}>{typeof p.name === 'string' ? p.name : p.name.it}</a>
             </h3>
             <div style="display:flex; gap:0.5rem;">
+              <a class="btn btn-ghost" href={`/progetti/${p.slug}/`} data-href={`/progetti/${p.slug}/`} style="padding:0.25rem 0.7rem; font-size:0.72rem;">
+                <span data-i18n="proj.details">Dettagli</span> <Fragment set:html={icon('arrow-right')} />
+              </a>
               {p.url && (
                 <a href={p.url} target="_blank" rel="noopener" class="btn btn-outline" style="padding:0.25rem 0.7rem; font-size:0.72rem;">
                   <Fragment set:html={icon('github')} /> GitHub
@@ -122,7 +125,7 @@ import { icon, iconSet } from '../lib/icons.ts';
             {typeof p.description === 'object' ? p.description.it : p.description}
           </p>
           <div style="display:flex; flex-wrap:wrap; gap:0.4rem;">
-            {p.tech.map(t => (
+            {(p.tech ?? []).map(t => (
               <span class="badge">{t}</span>
             ))}
           </div>
@@ -136,7 +139,7 @@ import { icon, iconSet } from '../lib/icons.ts';
             <div class="card" style="padding:1.25rem;">
               <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
                 <h4 style="font-size:0.9rem; font-weight:700; color:var(--text);">
-                  {typeof p.name === 'string' ? p.name : p.name.it}
+                  <a class="proj-link" href={`/progetti/${p.slug}/`} data-href={`/progetti/${p.slug}/`}>{typeof p.name === 'string' ? p.name : p.name.it}</a>
                 </h4>
                 {p.url && (
                   <a href={p.url} target="_blank" rel="noopener" style="color:var(--accent); font-size:0.9rem; display:inline-flex;" aria-label="Open project"><Fragment set:html={icon('arrow-up-right')} /></a>
@@ -148,7 +151,7 @@ import { icon, iconSet } from '../lib/icons.ts';
                 {typeof p.description === 'object' ? p.description.it : p.description}
               </p>
               <div style="display:flex; flex-wrap:wrap; gap:0.35rem;">
-                {p.tech.map(t => <span class="badge">{t}</span>)}
+                {(p.tech ?? []).map(t => <span class="badge">{t}</span>)}
               </div>
             </div>
           ))}
@@ -446,7 +449,7 @@ import { icon, iconSet } from '../lib/icons.ts';
     </div>
   </div>
 
-  <script define:vars={{ cvData: cv, ic: iconSet }}>
+  <script define:vars={{ cvData: { roles: cv.roles, tagline: cv.tagline, about: cv.about, softSkills: cv.softSkills }, ic: iconSet }}>
     const lang = { current: 'it' };
     const t = {
       it: {
@@ -460,7 +463,7 @@ import { icon, iconSet } from '../lib/icons.ts';
         'cert.verify':'Verify on-chain','cert.txid':'TxID Bitcoin:','cert.hash':'Hash certificato:',
         'cert.verify-note':'Certificato verificabile tramite OpenTimestamps (.ots) e firma GPG (.asc)',
         'contact.text':'Sono sempre aperto a nuove opportunità, collaborazioni o semplicemente a fare due chiacchiere di tech.',
-        'footer.built':'Costruito con','footer.privacy':'Privacy & licenze','projects.more':'+ Altri progetti',
+        'footer.built':'Costruito con','footer.privacy':'Privacy & licenze','projects.more':'+ Altri progetti','proj.details':'Dettagli',
         'certs.download':'Scarica certificati',
       },
       en: {
@@ -474,12 +477,13 @@ import { icon, iconSet } from '../lib/icons.ts';
         'cert.verify':'Verify on-chain','cert.txid':'Bitcoin TxID:','cert.hash':'Certificate hash:',
         'cert.verify-note':'Certificate verifiable via OpenTimestamps (.ots) and GPG signature (.asc)',
         'contact.text':"I'm always open to new opportunities, collaborations, or just talking tech.",
-        'footer.built':'Built with','footer.privacy':'Privacy & licenses','projects.more':'+ More projects',
+        'footer.built':'Built with','footer.privacy':'Privacy & licenses','projects.more':'+ More projects','proj.details':'Details',
         'certs.download':'Download certificates',
       }
     };
 
     function applyLang(l) {
+      if (typeof typing !== 'undefined' && typing) typing.stop();
       lang.current = l;
       document.documentElement.lang = l;
       document.querySelectorAll('[data-i18n]').forEach(el => {
@@ -499,6 +503,7 @@ import { icon, iconSet } from '../lib/icons.ts';
         if (softSkills[i]) b.textContent = softSkills[i];
       });
       document.getElementById('privacy-link').href = '/privacy/?lang=' + l;
+      document.querySelectorAll('a[data-href]').forEach(a => { a.href = a.dataset.href + '?lang=' + l; });
       document.getElementById('lang-toggle').textContent = l === 'it' ? 'EN' : 'IT';
     }
 
@@ -764,6 +769,111 @@ import { icon, iconSet } from '../lib/icons.ts';
         });
       }, { threshold: 0, rootMargin: '-20% 0px -60% 0px' });
       navSections.forEach(s => activeObserver.observe(s));
+    }
+
+    // ---------- Language from the URL (links coming from a project page) ----------
+    if (new URLSearchParams(location.search).get('lang') === 'en') applyLang('en');
+
+    // ---------- Animations (all skipped with prefers-reduced-motion) ----------
+    const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // Typewriter for the hero. Text stays in the DOM the whole time (the untyped part is just
+    // hidden), so the layout never jumps. Plays once per browser session.
+    var typing = null;
+    function startTypewriter() {
+      let played = false;
+      try { played = sessionStorage.getItem('tw-played') === '1'; sessionStorage.setItem('tw-played', '1'); } catch (e) { /* storage unavailable */ }
+      if (calm || played || location.hash) return;
+
+      const steps = [];
+      const plan = [['greeting', 38], ['hero-title', 75], ['hero-role', 42], ['hero-tagline', 16]];
+      for (const [id, speed] of plan) {
+        const root = document.getElementById(id);
+        if (!root) continue;
+        const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+        const nodes = [];
+        while (walker.nextNode()) if (walker.currentNode.nodeValue.trim()) nodes.push(walker.currentNode);
+        for (const node of nodes) {
+          const text = node.nodeValue.replace(/\s+/g, ' ').trim();
+          const typed = document.createElement('span');
+          const rest = document.createElement('span');
+          rest.className = 'tw-rest';
+          rest.textContent = text;
+          node.replaceWith(typed, rest);
+          steps.push({ node, typed, rest, text, speed });
+        }
+      }
+      const cursor = document.createElement('span');
+      cursor.className = 'tw-cursor';
+      cursor.setAttribute('aria-hidden', 'true');
+      let stopped = false;
+      let timer = 0;
+
+      function finish() {
+        stopped = true;
+        clearTimeout(timer);
+        for (const st of steps) if (st.typed.isConnected) { st.typed.replaceWith(st.node); st.rest.remove(); }
+        setTimeout(() => cursor.remove(), 2500);
+        typing = null;
+      }
+      typing = { stop() { finish(); cursor.remove(); } };
+
+      let si = 0, ci = 0;
+      function tick() {
+        if (stopped) return;
+        const st = steps[si];
+        if (!st) { finish(); return; }
+        if (!st.typed.isConnected) { finish(); return; }   // language switch rewrote the text
+        if (ci === 0) st.typed.after(cursor);
+        ci++;
+        st.typed.textContent = st.text.slice(0, ci);
+        st.rest.textContent = st.text.slice(ci);
+        if (ci >= st.text.length) { si++; ci = 0; timer = setTimeout(tick, 140); }
+        else timer = setTimeout(tick, st.speed);
+      }
+      timer = setTimeout(tick, 350);
+    }
+    startTypewriter();
+
+    // Cards appear one after the other as they scroll into view.
+    if (!calm && 'IntersectionObserver' in window) {
+      const cards = [...document.querySelectorAll('#projects .card, #education .card, #certifications .card')].filter(c => !c.closest('details'));
+      cards.forEach(c => c.classList.add('reveal'));
+      let batch = 0, batchTimer = 0;
+      const revealer = new IntersectionObserver((entries) => {
+        for (const e of entries.filter(x => x.isIntersecting)) {
+          const el = e.target;
+          revealer.unobserve(el);
+          const delay = batch++ * 90;
+          el.style.setProperty('--d', delay + 'ms');
+          el.classList.add('in');
+          setTimeout(() => { el.classList.remove('reveal', 'in'); el.style.removeProperty('--d'); }, delay + 800);
+        }
+        clearTimeout(batchTimer);
+        batchTimer = setTimeout(() => { batch = 0; }, 250);
+      }, { threshold: 0.12, rootMargin: '0px 0px -6% 0px' });
+      cards.forEach(c => revealer.observe(c));
+    }
+
+    // Stats count up from zero the first time they are visible.
+    if (!calm && 'IntersectionObserver' in window) {
+      const counter = new IntersectionObserver((entries) => {
+        for (const e of entries.filter(x => x.isIntersecting)) {
+          const el = e.target;
+          counter.unobserve(el);
+          const m = /^(\d+)(.*)$/.exec(el.textContent.trim());
+          if (!m) continue;
+          const target = Number(m[1]), suffix = m[2];
+          el.style.minWidth = (m[0].length) + 'ch';
+          const t0 = performance.now(), dur = 1100;
+          (function frame(now) {
+            const k = Math.min(1, (now - t0) / dur);
+            el.textContent = Math.round(target * (1 - Math.pow(1 - k, 3))) + suffix;
+            if (k < 1) requestAnimationFrame(frame);
+          })(t0);
+        }
+      }, { threshold: 0.6 });
+      document.querySelectorAll('[data-count]').forEach(el => counter.observe(el));
     }
   </script>
 </Layout>

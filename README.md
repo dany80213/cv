@@ -11,6 +11,7 @@ Personal CV website built with [Astro](https://astro.build) and Tailwind CSS, pu
 | `npm run build`   | Build the site into `./dist/`               |
 | `npm run preview` | Preview the production build                |
 | `npm run pdf`     | Regenerate the CV PDF (uses Puppeteer)      |
+| `npm run sync:github` | Refresh the GitHub data shown on the project pages |
 
 Personal data lives in `src/data/cv.ts`. Pushing to `main` deploys via GitHub Actions.
 

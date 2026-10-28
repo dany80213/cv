@@ -10,15 +10,19 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "pdf": "node scripts/generate-pdf.mjs"
+    "pdf": "node scripts/generate-pdf.mjs",
+    "sync:github": "node scripts/sync-github.mjs"
   },
   "dependencies": {
     "@fontsource/jetbrains-mono": "^5.3.0",
     "@tailwindcss/vite": "^4.3.0",
     "astro": "^6.3.5",
+    "marked": "^18.1.2",
+    "sanitize-html": "^2.18.1",
     "tailwindcss": "^4.3.0"
   },
   "devDependencies": {
+    "@types/sanitize-html": "^2.16.2",
     "puppeteer": "^25.0.4"
   }
 }
