@@ -1,0 +1,176 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { cv } from '../data/cv.ts';
+
+const updated = { it: '28 ottobre 2026', en: 'October 28, 2026' };
+
+const content = {
+  it: {
+    title: 'Privacy e licenze',
+    back: '← Torna al CV',
+    updated: 'Ultimo aggiornamento',
+    sections: [
+      {
+        h: 'Titolare del trattamento',
+        p: [`${cv.name}, ${cv.location}. Per qualsiasi richiesta sui tuoi dati scrivi a <a href="mailto:${cv.email}">${cv.email}</a>.`],
+      },
+      {
+        h: 'In breve',
+        p: ['Questo sito è un CV statico. Non usa cookie, non ha analytics, pubblicità o pixel di tracciamento, non ha form, account o commenti. Non salva nulla nel tuo browser e non mostra banner dei cookie perché non servono.'],
+      },
+      {
+        h: 'Dati che raccolgo',
+        ul: [
+          '<strong>Log tecnici di hosting.</strong> Il sito è ospitato su GitHub Pages (GitHub, Inc., USA). Come ogni server web, GitHub può registrare il tuo indirizzo IP e i dati tecnici della richiesta per sicurezza e funzionamento del servizio. Io non ho accesso a questi log. Vedi l\'<a href="https://docs.github.com/site-policy/privacy-policies/github-general-privacy-statement" rel="noopener">informativa privacy di GitHub</a>.',
+          '<strong>Email.</strong> Se mi scrivi, uso il tuo indirizzo e il contenuto del messaggio solo per risponderti, e li conservo finché serve a gestire la conversazione. Non li cedo a terzi.',
+        ],
+      },
+      {
+        h: 'Servizi di terzi',
+        ul: [
+          '<strong>Font:</strong> JetBrains Mono è servito dal sito stesso. Nessuna richiesta a Google Fonts o ad altri CDN.',
+          '<strong>Blockstream:</strong> solo se clicchi su «Verify on-chain» nella sezione certificazioni, il tuo browser interroga <code>blockstream.info</code> per verificare la transazione Bitcoin. Senza il tuo click non parte nessuna richiesta. In quel caso Blockstream riceve il tuo IP secondo la propria informativa.',
+          '<strong>Link esterni</strong> (GitHub, jcmaxwell.it, ecc.): quando li apri passi sui loro siti, che hanno le proprie regole privacy.',
+        ],
+      },
+      {
+        h: 'Dati personali nel CV',
+        p: ['Nome, età, città, percorso scolastico, esperienze, certificazioni, indirizzo email e il PDF del CV sono dati miei, pubblicati volontariamente per presentarmi. Se hai trovato dati di un\'altra persona su questo sito, segnalamelo via email e li rimuovo.'],
+      },
+      {
+        h: 'I tuoi diritti',
+        p: [`Ai sensi del GDPR (artt. 15-22) puoi chiedere accesso, rettifica, cancellazione, limitazione o opposizione al trattamento dei tuoi dati, scrivendo a <a href="mailto:${cv.email}">${cv.email}</a>. Hai anche il diritto di presentare reclamo al <a href="https://www.garanteprivacy.it" rel="noopener">Garante per la protezione dei dati personali</a>.`],
+      },
+      {
+        h: 'Licenze',
+        ul: [
+          '<strong>Codice del sito</strong> (template Astro/Tailwind, componenti, script): licenza MIT, © 2026 Daniele Porcaro. Puoi riusarlo liberamente mantenendo l\'avviso di copyright. Testo completo in <a href="https://github.com/dany80213/cv/blob/main/LICENSE" rel="noopener">LICENSE</a>.',
+          '<strong>Contenuti personali</strong> (testi, descrizioni, foto, dati biografici, PDF del CV): tutti i diritti riservati. Se riusi il template, sostituisci questi contenuti con i tuoi.',
+          '<strong>Certificati e attestati</strong> in <code>public/certs</code>: documenti emessi da terzi e riferiti a me, non sono coperti dalla licenza MIT e non possono essere riutilizzati.',
+          '<strong>Loghi e marchi</strong> (Cisco, Comau, Cambridge, Bitcoin): appartengono ai rispettivi proprietari e sono usati solo per indicare certificazioni e competenze. Non implicano alcun accordo o sponsorizzazione.',
+        ],
+      },
+      {
+        h: 'Componenti open source',
+        ul: [
+          '<a href="https://astro.build" rel="noopener">Astro</a>: MIT',
+          '<a href="https://tailwindcss.com" rel="noopener">Tailwind CSS</a>: MIT',
+          '<a href="https://fontsource.org/fonts/jetbrains-mono" rel="noopener">JetBrains Mono</a> (via Fontsource): SIL Open Font License 1.1, © The JetBrains Mono Project Authors',
+          '<a href="https://pptr.dev" rel="noopener">Puppeteer</a> (solo in sviluppo, per generare il PDF): Apache-2.0',
+        ],
+      },
+      {
+        h: 'Modifiche',
+        p: ['Se cambia qualcosa (per esempio se aggiungo un servizio di terzi), aggiorno questa pagina e la data in alto. La cronologia è nel <a href="https://github.com/dany80213/cv/commits/main/src/pages/privacy.astro" rel="noopener">repository pubblico</a>.'],
+      },
+    ],
+  },
+  en: {
+    title: 'Privacy and licenses',
+    back: '← Back to CV',
+    updated: 'Last updated',
+    sections: [
+      {
+        h: 'Data controller',
+        p: [`${cv.name}, ${cv.location}. For any request about your data write to <a href="mailto:${cv.email}">${cv.email}</a>.`],
+      },
+      {
+        h: 'In short',
+        p: ['This site is a static CV. It uses no cookies, no analytics, ads or tracking pixels, and has no forms, accounts or comments. It stores nothing in your browser and shows no cookie banner because none is needed.'],
+      },
+      {
+        h: 'Data I collect',
+        ul: [
+          '<strong>Hosting logs.</strong> The site is hosted on GitHub Pages (GitHub, Inc., USA). Like any web server, GitHub may log your IP address and technical request data for security and service operation. I have no access to these logs. See <a href="https://docs.github.com/site-policy/privacy-policies/github-general-privacy-statement" rel="noopener">GitHub\'s privacy statement</a>.',
+          '<strong>Email.</strong> If you write to me, I use your address and message only to reply, and keep them as long as needed to handle the conversation. I do not share them with third parties.',
+        ],
+      },
+      {
+        h: 'Third-party services',
+        ul: [
+          '<strong>Fonts:</strong> JetBrains Mono is served by the site itself. No requests to Google Fonts or other CDNs.',
+          '<strong>Blockstream:</strong> only if you click «Verify on-chain» in the certifications section, your browser queries <code>blockstream.info</code> to check the Bitcoin transaction. Without your click no request is made. In that case Blockstream receives your IP under its own policy.',
+          '<strong>External links</strong> (GitHub, jcmaxwell.it, etc.): when you open them you leave this site, and they have their own privacy rules.',
+        ],
+      },
+      {
+        h: 'Personal data in the CV',
+        p: ['Name, age, city, education, experience, certifications, email address and the CV PDF are my own data, published voluntarily to present myself. If you find another person\'s data on this site, tell me by email and I will remove it.'],
+      },
+      {
+        h: 'Your rights',
+        p: [`Under the GDPR (arts. 15-22) you can request access, rectification, erasure, restriction or objection regarding your data by writing to <a href="mailto:${cv.email}">${cv.email}</a>. You may also lodge a complaint with the <a href="https://www.garanteprivacy.it" rel="noopener">Italian Data Protection Authority (Garante)</a>.`],
+      },
+      {
+        h: 'Licenses',
+        ul: [
+          '<strong>Site code</strong> (Astro/Tailwind template, components, scripts): MIT license, © 2026 Daniele Porcaro. You may reuse it freely as long as you keep the copyright notice. Full text in <a href="https://github.com/dany80213/cv/blob/main/LICENSE" rel="noopener">LICENSE</a>.',
+          '<strong>Personal content</strong> (texts, descriptions, photos, biographical data, CV PDF): all rights reserved. If you reuse the template, replace this content with your own.',
+          '<strong>Certificates and attestations</strong> in <code>public/certs</code>: documents issued by third parties and referring to me. They are not covered by the MIT license and may not be reused.',
+          '<strong>Logos and trademarks</strong> (Cisco, Comau, Cambridge, Bitcoin): belong to their respective owners and are used only to indicate certifications and skills. They imply no agreement or endorsement.',
+        ],
+      },
+      {
+        h: 'Open source components',
+        ul: [
+          '<a href="https://astro.build" rel="noopener">Astro</a>: MIT',
+          '<a href="https://tailwindcss.com" rel="noopener">Tailwind CSS</a>: MIT',
+          '<a href="https://fontsource.org/fonts/jetbrains-mono" rel="noopener">JetBrains Mono</a> (via Fontsource): SIL Open Font License 1.1, © The JetBrains Mono Project Authors',
+          '<a href="https://pptr.dev" rel="noopener">Puppeteer</a> (development only, used to generate the PDF): Apache-2.0',
+        ],
+      },
+      {
+        h: 'Changes',
+        p: ['If anything changes (for example if I add a third-party service), I update this page and the date above. History is in the <a href="https://github.com/dany80213/cv/commits/main/src/pages/privacy.astro" rel="noopener">public repository</a>.'],
+      },
+    ],
+  },
+};
+---
+<Layout title="Privacy & licenze – Daniele Porcaro">
+  <main style="max-width:760px; margin:0 auto; padding:3rem 1.5rem 4rem;">
+    <nav style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2.5rem;">
+      <a id="back-link" href="/cv/" class="nav-link" style="color:var(--text-dim); text-decoration:none; font-size:0.85rem;"></a>
+      <button id="lang-toggle" class="btn btn-outline" style="padding:0.3rem 0.8rem; font-size:0.75rem;">EN</button>
+    </nav>
+
+    {(['it', 'en'] as const).map((l) => (
+      <article data-lang={l} lang={l} hidden={l !== 'it'}>
+        <h1 style="font-size:clamp(1.6rem,5vw,2.4rem); font-weight:700; margin-bottom:0.25rem;">{content[l].title}</h1>
+        <p style="color:var(--text-muted); font-size:0.78rem; margin-bottom:2rem;">{content[l].updated}: {updated[l]}</p>
+        {content[l].sections.map((s) => (
+          <section style="margin-bottom:2rem;">
+            <h2 class="accent" style="font-size:0.8rem; letter-spacing:0.1em; text-transform:uppercase; margin-bottom:0.75rem;">{s.h}</h2>
+            {s.p && s.p.map((x) => <p class="legal" set:html={x} />)}
+            {s.ul && <ul class="legal">{s.ul.map((x) => <li set:html={x} />)}</ul>}
+          </section>
+        ))}
+      </article>
+    ))}
+  </main>
+
+  <style is:global>
+    .legal { color: var(--text-dim); font-size: 0.88rem; }
+    ul.legal { padding-left: 1.2rem; }
+    ul.legal li { margin-bottom: 0.6rem; }
+    .legal a, main a:not(.nav-link) { color: var(--accent); }
+    .legal code { background: var(--bg-card); border: 1px solid var(--border); border-radius: 4px; padding: 0 0.3rem; font-size: 0.82em; }
+    .legal strong { color: var(--text); }
+  </style>
+
+  <script define:vars={{ backLabels: { it: content.it.back, en: content.en.back } }}>
+    function setLang(l) {
+      document.documentElement.lang = l;
+      document.querySelectorAll('article[data-lang]').forEach(a => { a.hidden = a.dataset.lang !== l; });
+      document.getElementById('back-link').textContent = backLabels[l];
+      document.getElementById('back-link').href = '/cv/';
+      document.getElementById('lang-toggle').textContent = l === 'it' ? 'EN' : 'IT';
+      document.getElementById('lang-toggle').dataset.lang = l;
+    }
+    const q = new URLSearchParams(location.search).get('lang');
+    setLang(q === 'en' ? 'en' : 'it');
+    document.getElementById('lang-toggle').addEventListener('click', e => {
+      setLang(e.currentTarget.dataset.lang === 'it' ? 'en' : 'it');
+    });
+  </script>
+</Layout>
