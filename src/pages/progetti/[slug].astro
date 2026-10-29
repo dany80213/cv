@@ -3,6 +3,10 @@ import Layout from '../../layouts/Layout.astro';
 import { cv, github } from '../../data/cv.ts';
 import { renderMarkdown } from '../../lib/markdown.ts';
 import { icon } from '../../lib/icons.ts';
+import { Image, getImage } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import { projectImage } from '../../lib/project-images.ts';
+import GeneratedCover from '../../components/GeneratedCover.astro';
 
 export function getStaticPaths() {
   return cv.projects.map((p: any) => ({ params: { slug: p.slug }, props: { slug: p.slug } }));
@@ -13,6 +17,14 @@ const projects = cv.projects as any[];
 const p = projects.find((x) => x.slug === slug);
 const gh = github[slug];
 const others = projects.filter((x) => x.slug !== slug);
+
+// Images: the first one is the cover. A missing file is skipped (with a warning), never a build error.
+const gallery = (await Promise.all((p.images ?? []).map(async (im: any) => {
+  const meta = projectImage(im.file);
+  if (!meta) { console.warn(`[projects] ${slug}: image "${im.file}" not found in src/assets/projects`); return null; }
+  const full = await getImage({ src: meta, width: Math.min(meta.width, 1800), format: 'webp' });
+  return { im, meta, full: full.src };
+}))).filter(Boolean) as { im: any; meta: ImageMetadata; full: string }[];
 
 const langs = ['it', 'en'] as const;
 type Lang = (typeof langs)[number];
@@ -49,6 +61,15 @@ const langBar = (() => {
   if (rest) top.push({ name: '…', pct: (rest / total) * 100 });
   return top;
 })();
+
+// What the lightbox script needs (computed here so the template stays simple).
+const shotsData = gallery.map((s) => {
+  const w = Math.min(s.meta.width, 1800);
+  return {
+    src: s.full, w, h: Math.round((w * s.meta.height) / s.meta.width),
+    alt: { it: pick(s.im.alt, 'it') ?? '', en: pick(s.im.alt, 'en') ?? pick(s.im.alt, 'it') ?? '' },
+  };
+});
 
 const pct = (v: number, l: Lang) => (v < 0.1 ? (l === 'it' ? '<0,1%' : '<0.1%') : `${v.toFixed(1).replace('.', l === 'it' ? ',' : '.')}%`);
 
@@ -93,7 +114,42 @@ const nameIt = pick(p.name, 'it');
             {gh?.homepage && <a href={gh.homepage} target="_blank" rel="noopener" class="btn btn-outline"><Fragment set:html={icon('external-link')} /> {T[l].site}</a>}
           </div>
         </header>
+      </article>
+    ))}
 
+    <section class="pj-media" aria-label="Immagini">
+      {gallery.length > 0 ? (
+        <>
+          <button type="button" class="pj-hero" data-open="0" aria-haspopup="dialog">
+            <Image src={gallery[0].meta} widths={[640, 960, 1440]} sizes="(max-width: 900px) 100vw, 860px" format="webp" quality={82}
+              alt={pick(gallery[0].im.alt, 'it') ?? ''} data-alt-it={pick(gallery[0].im.alt, 'it') ?? ''} data-alt-en={pick(gallery[0].im.alt, 'en') ?? ''}
+              loading="eager" fetchpriority="high" />
+          </button>
+          {gallery.length > 1 && (
+            <div class="pj-shots">
+              {gallery.slice(1).map((s, i) => (
+                <figure>
+                  <button type="button" data-open={i + 1} aria-haspopup="dialog">
+                    <Image src={s.meta} widths={[320, 480, 640]} sizes="(max-width: 600px) 100vw, 270px" format="webp" quality={80}
+                      alt={pick(s.im.alt, 'it') ?? ''} data-alt-it={pick(s.im.alt, 'it') ?? ''} data-alt-en={pick(s.im.alt, 'en') ?? ''} loading="lazy" />
+                  </button>
+                  {pick(s.im.alt, 'it') && (
+                    <figcaption>
+                      <span data-lang="it">{pick(s.im.alt, 'it')}</span><span data-lang="en" hidden>{pick(s.im.alt, 'en') ?? pick(s.im.alt, 'it')}</span>
+                    </figcaption>
+                  )}
+                </figure>
+              ))}
+            </div>
+          )}
+        </>
+      ) : (
+        <div class="pj-hero static"><GeneratedCover slug={p.slug} tech={p.tech ?? []} /></div>
+      )}
+    </section>
+
+    {langs.map((l) => (
+      <article data-lang={l} lang={l} hidden={l !== 'it'}>
         {pick(p.contribution, l) && (
           <section class="pj-contrib">
             <h2>{T[l].contribution}</h2>
@@ -130,19 +186,6 @@ const nameIt = pick(p.name, 'it');
           </section>
         )}
 
-        {p.images?.length > 0 && (
-          <section>
-            <h2>{T[l].shots}</h2>
-            <div class="pj-shots">
-              {p.images.map((im: any) => (
-                <figure>
-                  <img src={`/projects/${im.file}`} alt={pick(im.alt, l) ?? ''} loading="lazy" />
-                  {pick(im.alt, l) && <figcaption>{pick(im.alt, l)}</figcaption>}
-                </figure>
-              ))}
-            </div>
-          </section>
-        )}
       </article>
     ))}
 
@@ -186,6 +229,15 @@ const nameIt = pick(p.name, 'it');
     )}
   </main>
 
+  {gallery.length > 0 && (
+    <dialog id="lb" class="lb" aria-label="Immagini del progetto">
+      <button type="button" class="lb-btn lb-x" data-lb="close" aria-label="Chiudi"><Fragment set:html={icon('x')} /></button>
+      <button type="button" class="lb-btn lb-prev" data-lb="prev" aria-label="Precedente"><Fragment set:html={icon('arrow-left')} /></button>
+      <figure><img id="lb-img" alt="" /><figcaption id="lb-cap"></figcaption></figure>
+      <button type="button" class="lb-btn lb-next" data-lb="next" aria-label="Successiva"><Fragment set:html={icon('arrow-right')} /></button>
+    </dialog>
+  )}
+
   <style is:global>
     .pj { max-width: 860px; margin: 0 auto; padding: 2rem 1.5rem 5rem; }
     .pj-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2.5rem; }
@@ -210,10 +262,34 @@ const nameIt = pick(p.name, 'it');
     .pj-legend { list-style: none; display: flex; flex-wrap: wrap; gap: 0.4rem 1.25rem; margin-top: 0.75rem; font-size: 0.78rem; color: var(--text-dim); }
     .pj-legend i { display: inline-block; width: 8px; height: 8px; border-radius: 2px; background: var(--accent); margin-right: 0.4rem; }
     .pj-legend small { color: var(--text-muted); }
-    .pj-shots { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; }
+    .pj-media { margin: 0 0 2.5rem; }
+    .pj-hero { display: block; width: 100%; padding: 0; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; background: var(--bg-card); cursor: zoom-in; aspect-ratio: 16 / 9; box-shadow: 0 0 48px var(--accent-glow); transition: border-color 0.2s; }
+    .pj-hero:hover { border-color: var(--accent); }
+    .pj-hero.static { cursor: default; box-shadow: none; aspect-ratio: 21 / 7; }
+    .pj-hero.static:hover { border-color: var(--border); }
+    .pj-hero img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top; }
+    .pj-hero .gen-cover { font-size: clamp(0.8rem, 2vw, 1.05rem); }
+    .pj-shots { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 0.75rem; margin-top: 0.75rem; }
     .pj-shots figure { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
-    .pj-shots img { display: block; width: 100%; height: auto; }
-    .pj-shots figcaption { padding: 0.6rem 0.9rem; font-size: 0.76rem; color: var(--text-muted); }
+    .pj-shots figure:hover { border-color: var(--accent); }
+    .pj-shots button { display: block; width: 100%; padding: 0; border: 0; background: none; cursor: zoom-in; aspect-ratio: 16 / 9; overflow: hidden; }
+    .pj-shots img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top; }
+    .pj-shots figcaption { padding: 0.5rem 0.8rem; font-size: 0.74rem; color: var(--text-muted); }
+    .lb { border: none; padding: 0; background: rgba(5, 5, 8, 0.94); color: #fff; width: 100vw; height: 100vh; max-width: none; max-height: none; display: none; }
+    .lb[open] { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 0.75rem; padding: 3.5rem 1rem 1.5rem; }
+    .lb::backdrop { background: transparent; }
+    .lb figure { min-width: 0; display: grid; gap: 0.75rem; justify-items: center; margin: 0; }
+    .lb img { max-width: 100%; max-height: calc(100vh - 9rem); width: auto; height: auto; border-radius: 8px; }
+    .lb figcaption { color: #cbd5e1; font-size: 0.82rem; text-align: center; min-height: 1.2em; }
+    .lb-btn { background: rgba(255, 255, 255, 0.08); color: #fff; border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 50%; width: 2.6rem; height: 2.6rem; display: grid; place-items: center; cursor: pointer; font-size: 1.1rem; }
+    .lb-btn:hover { background: rgba(255, 255, 255, 0.18); }
+    .lb-x { position: absolute; top: 1rem; right: 1rem; }
+    .lb[data-single='true'] .lb-prev, .lb[data-single='true'] .lb-next { visibility: hidden; }
+    @media (max-width: 640px) {
+      .lb[open] { grid-template-columns: 1fr; padding: 3.5rem 0.5rem 4.5rem; }
+      .lb-prev, .lb-next { position: absolute; bottom: 1rem; }
+      .lb-prev { left: calc(50% - 3.2rem); } .lb-next { right: calc(50% - 3.2rem); }
+    }
     .pj-note { color: var(--text-muted); font-size: 0.76rem; margin-bottom: 1rem; }
     .pj-readme > .pj-note:first-child { margin-top: 2rem; font-size: 0.82rem; }
     .pj-note a, .md a { color: var(--accent); }
@@ -246,7 +322,7 @@ const nameIt = pick(p.name, 'it');
     .md li:has(> .task:first-child) { list-style: none; margin-left: -1.1rem; }
   </style>
 
-  <script define:vars={{ sunIcon: icon('sun', { size: '1.2rem' }), moonIcon: icon('moon', { size: '1.2rem' }) }}>
+  <script define:vars={{ sunIcon: icon('sun', { size: '1.2rem' }), moonIcon: icon('moon', { size: '1.2rem' }), shots: shotsData }}>
     const toggle = document.getElementById('lang-toggle');
     function setLang(l) {
       document.documentElement.lang = l;
@@ -255,9 +331,33 @@ const nameIt = pick(p.name, 'it');
       toggle.dataset.lang = l;
       document.querySelectorAll('a[data-href]').forEach((a) => { a.href = `${a.dataset.href}?lang=${l}`; });
       document.getElementById('back-link').href = `/?lang=${l}#projects`;
+      document.querySelectorAll('img[data-alt-it]').forEach((i) => { i.alt = (l === 'en' ? i.dataset.altEn : i.dataset.altIt) || i.dataset.altIt || ''; });
     }
     setLang(new URLSearchParams(location.search).get('lang') === 'en' ? 'en' : 'it');
     toggle.addEventListener('click', () => setLang(toggle.dataset.lang === 'it' ? 'en' : 'it'));
+
+    // Lightbox: click an image to see it large; arrows / Esc / click outside.
+    const dlg = document.getElementById('lb');
+    if (dlg && shots.length) {
+      const img = document.getElementById('lb-img');
+      const cap = document.getElementById('lb-cap');
+      let cur = 0;
+      const show = (i) => {
+        cur = (i + shots.length) % shots.length;
+        const s = shots[cur];
+        const a = s.alt[document.documentElement.lang === 'en' ? 'en' : 'it'];
+        img.src = s.src; img.width = s.w; img.height = s.h; img.alt = a; cap.textContent = a;
+        dlg.dataset.single = String(shots.length === 1);
+      };
+      document.querySelectorAll('[data-open]').forEach((b) => b.addEventListener('click', () => { show(Number(b.dataset.open)); dlg.showModal(); }));
+      dlg.addEventListener('click', (e) => {
+        const t = e.target;
+        if (t === dlg || t.closest('[data-lb="close"]')) dlg.close();
+        else if (t.closest('[data-lb="prev"]')) show(cur - 1);
+        else if (t.closest('[data-lb="next"]')) show(cur + 1);
+      });
+      dlg.addEventListener('keydown', (e) => { if (e.key === 'ArrowLeft') show(cur - 1); if (e.key === 'ArrowRight') show(cur + 1); });
+    }
 
     // Theme toggle (also switches the favicon, like on the home page).
     let theme = 'dark';

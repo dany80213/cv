@@ -129,8 +129,8 @@ export const FILES = [
         pair('contribution', 'Il mio contributo', { multiline: true, required: false, rows: 5, hint: 'Solo per progetti di altri o in collaborazione: cosa hai fatto tu. Compare in evidenza nella pagina (Markdown ammesso)' }),
         strlist('tech', 'Tecnologie'),
         opt('url', 'Link', { inputType: 'url', hint: 'GitHub o sito. Se è un repository GitHub, la sincronizzazione usa questo indirizzo' }),
-        { type: 'list', key: 'images', label: 'Immagini', required: false, itemLabel: (i) => i.file || 'Nuova immagine', addLabel: 'Aggiungi immagine', fields: [
-          { type: 'file', key: 'file', label: 'Immagine', required: true, folder: 'public/projects', publicPrefix: '/projects/', accept: '.png,.jpg,.jpeg,.webp', maxMB: 3 },
+        { type: 'list', key: 'images', label: 'Immagini (la prima è la copertina)', required: false, itemLabel: (i) => i.file || 'Nuova immagine', addLabel: 'Aggiungi immagine', fields: [
+          { type: 'file', key: 'file', label: 'Immagine', required: true, folder: 'src/assets/projects', publicPrefix: '/', noPublicUrl: true, accept: '.png,.jpg,.jpeg,.webp', maxMB: 25, optimize: { maxSide: 1800, quality: 0.84 }, hint: 'Viene ridimensionata (lato lungo 1800 px) e convertita in WebP prima del caricamento; i metadati, come la posizione GPS, vengono eliminati.' },
           pair('alt', 'Descrizione dell’immagine', { required: false, hint: 'Per chi non la vede e come didascalia' }),
         ] },
         bool('mirrorReadme', 'Mostra il README del repository', 'Per i repository di altri il README non viene copiato sul sito, salvo accordo con il proprietario'),

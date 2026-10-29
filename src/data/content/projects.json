@@ -16,6 +16,22 @@
         "JavaScript",
         "RPi5"
       ],
+      "images": [
+        {
+          "file": "alarm-system-1-dashboard.webp",
+          "alt": {
+            "it": "Dashboard dell'antifurto con la planimetria della casa, i sensori e il registro degli eventi (dati di esempio)",
+            "en": "Alarm system dashboard with the house floor plan, sensors and event log (sample data)"
+          }
+        },
+        {
+          "file": "alarm-system-2-allarme.webp",
+          "alt": {
+            "it": "Allarme scattato: il sensore della porta d'ingresso diventa rosso sulla planimetria (dati di esempio)",
+            "en": "Alarm triggered: the front door sensor turns red on the floor plan (sample data)"
+          }
+        }
+      ],
       "url": "https://github.com/dany80213/alarm-system",
       "featured": true
     },
@@ -73,6 +89,29 @@
         "IOKit",
         "SQLite"
       ],
+      "images": [
+        {
+          "file": "menustats-1-barra.webp",
+          "alt": {
+            "it": "La barra dei menu con CPU, memoria, rete, temperature, ventole, batteria, meteo e ora, e le tendine di CPU e sensori",
+            "en": "The menu bar with CPU, memory, network, temperatures, fans, battery, weather and clock, plus the CPU and sensors panels"
+          }
+        },
+        {
+          "file": "menustats-2-schede.webp",
+          "alt": {
+            "it": "Le tendine a schede: CPU con il carico per core, memoria e sensori con ventole e temperature",
+            "en": "The tabbed panels: CPU with per-core load, memory, and sensors with fans and temperatures"
+          }
+        },
+        {
+          "file": "menustats-3-impostazioni.webp",
+          "alt": {
+            "it": "Le impostazioni della barra dei menu: spazio, aspetto e colori",
+            "en": "Menu bar settings: space, appearance and colors"
+          }
+        }
+      ],
       "url": "https://github.com/thomas-addamo/MenuStats",
       "featured": true
     },
@@ -110,6 +149,22 @@
         "ESP32",
         "JavaScript",
         "MQTT"
+      ],
+      "images": [
+        {
+          "file": "irrigation-system-1-controllo.webp",
+          "alt": {
+            "it": "Dashboard di irrigation-system: stato del dispositivo, pompa accesa, controllo manuale e irrigazione a tempo (schermata con ESP32 simulato).",
+            "en": "irrigation-system dashboard: device status, pump on, manual control and timed irrigation (screenshot with a simulated ESP32)."
+          }
+        },
+        {
+          "file": "irrigation-system-2-programmazione.webp",
+          "alt": {
+            "it": "Programmazione settimanale: scelta di giorni, orario e durata, con l'elenco delle irrigazioni pianificate (dati di esempio).",
+            "en": "Weekly scheduler: pick days, time and duration, with the list of planned runs (sample data)."
+          }
+        }
       ],
       "url": "https://github.com/dany80213/irrigation-system",
       "featured": false
